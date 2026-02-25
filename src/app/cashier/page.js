@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { getCategories, getProducts } from "@/actions/products";
 import { createOrder, cancelOrder } from "@/actions/orders";
+import { useSettings } from "@/components/SettingsProvider";
 
 function formatRupiah(num) {
     return "Rp " + Number(num).toLocaleString("id-ID");
@@ -39,6 +40,27 @@ export default function Cashier() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showReceipt, setShowReceipt] = useState(null);
     const [paymentMethod, setPaymentMethod] = useState("cash");
+
+    const { storeName, autoPrint, receiptFooter, taxRates, paymentMethods } = useSettings();
+    const standardTaxRate = taxRates?.[0]?.rate || 10;
+    const activePaymentMethods = paymentMethods?.filter(pm => pm.active) || [];
+
+    // Auto-select first available payment method if none selected or if current is invalid
+    useEffect(() => {
+        if (activePaymentMethods.length > 0 && !activePaymentMethods.find(p => p.id === paymentMethod)) {
+            setPaymentMethod(activePaymentMethods[0].id);
+        }
+    }, [activePaymentMethods, paymentMethod]);
+
+    // Auto print receipt
+    useEffect(() => {
+        if (showReceipt && autoPrint) {
+            const timer = setTimeout(() => {
+                window.print();
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [showReceipt, autoPrint]);
 
     // Load categories and products
     const loadData = useCallback(async () => {
@@ -112,7 +134,7 @@ export default function Cashier() {
         (sum, item) => sum + item.price * item.quantity,
         0
     );
-    const tax = taxEnabled ? Math.round(subtotal * 0.1) : 0;
+    const tax = taxEnabled ? Math.round(subtotal * (standardTaxRate / 100)) : 0;
     const discount =
         discountCode.toUpperCase() === "KING EMYU"
             ? Math.round(subtotal * 0.5)
@@ -166,7 +188,7 @@ export default function Cashier() {
     return (
         <div className="flex-1 flex flex-col h-full min-w-0">
             {/* Header */}
-            <header className="h-16 border-b border-primary/10 bg-white flex items-center justify-between px-4 pl-14 lg:px-6 shrink-0">
+            <header className="h-16 border-b border-primary/10 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex items-center justify-between px-4 pl-14 lg:px-6 shrink-0">
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -176,7 +198,7 @@ export default function Cashier() {
                     </div>
                 </div>
                 <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-2 text-slate-500 font-medium">
+                    <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400 font-medium">
                         <span className="material-symbols-outlined text-lg">
                             schedule
                         </span>
@@ -184,7 +206,7 @@ export default function Cashier() {
                             <LiveClock />
                         </span>
                     </div>
-                    <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
+                    <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:bg-zinc-800 transition-colors">
                         <span className="material-symbols-outlined">
                             notifications
                         </span>
@@ -195,27 +217,27 @@ export default function Cashier() {
             {/* POS Body */}
             <main className="flex-1 flex flex-col lg:flex-row overflow-hidden lg:overflow-hidden relative">
                 {/* Left: Product Menu */}
-                <div className="w-full lg:w-[65%] flex-1 flex flex-col bg-slate-50/50 lg:border-r border-primary/10 overflow-hidden">
+                <div className="w-full lg:w-[65%] flex-1 flex flex-col bg-slate-50 dark:bg-zinc-900/50 lg:border-r border-primary/10 dark:border-zinc-800 overflow-hidden">
                     {/* Search & Tabs */}
                     <div className="p-6 pb-0 space-y-6">
                         <div className="relative max-w-xl">
-                            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-zinc-400">
                                 search
                             </span>
                             <input
-                                className="w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all shadow-sm"
+                                className="w-full pl-12 pr-4 py-3 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all shadow-sm"
                                 placeholder="Search menu items..."
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
-                        <div className="flex items-center gap-2 border-b border-slate-200 overflow-x-auto scrollbar-hide">
+                        <div className="flex items-center gap-2 border-b border-slate-200 dark:border-zinc-800 overflow-x-auto scrollbar-hide">
                             <button
                                 onClick={() => setSelectedCategory(null)}
                                 className={`px-6 py-3 border-b-2 text-sm font-bold whitespace-nowrap transition-colors ${selectedCategory === null
                                     ? "border-primary text-primary"
-                                    : "border-transparent text-slate-500 hover:text-primary"
+                                    : "border-transparent text-slate-500 dark:text-zinc-400 hover:text-primary"
                                     }`}
                             >
                                 All
@@ -228,7 +250,7 @@ export default function Cashier() {
                                     }
                                     className={`px-6 py-3 border-b-2 text-sm font-medium whitespace-nowrap transition-colors ${selectedCategory === cat.id
                                         ? "border-primary text-primary font-bold"
-                                        : "border-transparent text-slate-500 hover:text-primary"
+                                        : "border-transparent text-slate-500 dark:text-zinc-400 hover:text-primary"
                                         }`}
                                 >
                                     {cat.name}
@@ -244,7 +266,7 @@ export default function Cashier() {
                                 <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
                             </div>
                         ) : filteredProducts.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center h-40 text-slate-400">
+                            <div className="flex flex-col items-center justify-center h-40 text-slate-400 dark:text-zinc-400">
                                 <span className="material-symbols-outlined text-4xl mb-2">
                                     search_off
                                 </span>
@@ -263,15 +285,15 @@ export default function Cashier() {
                                         <div
                                             key={product.id}
                                             onClick={() => addToCart(product)}
-                                            className={`bg-white p-3 rounded-xl border transition-all shadow-sm relative ${!product.isActive
-                                                ? "border-slate-200 opacity-60 grayscale cursor-not-allowed"
+                                            className={`bg-white dark:bg-zinc-950 p-3 rounded-xl border transition-all shadow-sm relative ${!product.isActive
+                                                ? "border-slate-200 dark:border-zinc-800 opacity-60 grayscale cursor-not-allowed"
                                                 : inCart
                                                     ? "border-primary ring-2 ring-primary/20 cursor-pointer"
-                                                    : "border-slate-200 hover:border-primary/50 cursor-pointer group"
+                                                    : "border-slate-200 dark:border-zinc-800 hover:border-primary/50 cursor-pointer group"
                                                 }`}
                                         >
                                             <div
-                                                className="aspect-square rounded-lg mb-3 bg-center bg-cover bg-slate-100 overflow-hidden relative"
+                                                className="aspect-square rounded-lg mb-3 bg-center bg-cover bg-slate-100 dark:bg-zinc-800 overflow-hidden relative"
                                                 style={{
                                                     backgroundImage: product.imageUrl
                                                         ? `url('${product.imageUrl}')`
@@ -295,14 +317,14 @@ export default function Cashier() {
                                                     </div>
                                                 )}
                                             </div>
-                                            <h3 className="font-bold text-slate-800">
+                                            <h3 className="font-bold text-slate-800 dark:text-zinc-100">
                                                 {product.name}
                                             </h3>
                                             <div className="flex items-center justify-between">
                                                 <p
                                                     className={`font-bold text-sm ${product.isActive
                                                         ? "text-primary"
-                                                        : "text-slate-500"
+                                                        : "text-slate-500 dark:text-zinc-400"
                                                         }`}
                                                 >
                                                     {formatRupiah(
@@ -324,10 +346,10 @@ export default function Cashier() {
                 </div>
 
                 {/* Right: Order Summary */}
-                <div className="w-full lg:w-[35%] h-[45vh] min-h-[350px] lg:h-full lg:min-h-0 flex flex-col bg-white border-t lg:border-t-0 lg:border-l border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] lg:shadow-none z-10 overflow-hidden shrink-0">
-                    <div className="px-4 py-3 flex items-center justify-between border-b border-slate-100">
+                <div className="w-full lg:w-[35%] h-[45vh] min-h-[350px] lg:h-full lg:min-h-0 flex flex-col bg-white dark:bg-zinc-950 border-t lg:border-t-0 lg:border-l border-slate-200 dark:border-zinc-800 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] lg:shadow-none z-10 overflow-hidden shrink-0">
+                    <div className="px-4 py-3 flex items-center justify-between border-b border-slate-100 dark:border-zinc-800">
                         <h2 className="text-sm font-bold">Current Order</h2>
-                        <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 font-mono">
+                        <span className="text-[10px] bg-slate-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-slate-500 dark:text-zinc-400 font-mono">
                             {cart.length} items
                         </span>
                     </div>
@@ -350,14 +372,14 @@ export default function Cashier() {
                             cart.map((item) => (
                                 <div
                                     key={item.productId}
-                                    className="px-3 py-2 bg-slate-50 rounded-lg border border-slate-100"
+                                    className="px-3 py-2 bg-slate-50 dark:bg-zinc-900 rounded-lg border border-slate-100 dark:border-zinc-800"
                                 >
                                     <div className="flex justify-between items-center mb-1.5">
                                         <div className="min-w-0 flex-1 mr-2">
                                             <h4 className="text-xs font-bold truncate">
                                                 {item.name}
                                             </h4>
-                                            <p className="text-[10px] text-slate-400">
+                                            <p className="text-[10px] text-slate-400 dark:text-zinc-400">
                                                 {formatRupiah(item.price)} each
                                             </p>
                                         </div>
@@ -376,7 +398,7 @@ export default function Cashier() {
                                                         -1
                                                     )
                                                 }
-                                                className="w-6 h-6 flex items-center justify-center rounded-md bg-white border border-slate-200 hover:bg-slate-50"
+                                                className="w-6 h-6 flex items-center justify-center rounded-md bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:bg-zinc-900"
                                             >
                                                 <span className="material-symbols-outlined text-xs">
                                                     remove
@@ -392,7 +414,7 @@ export default function Cashier() {
                                                         1
                                                     )
                                                 }
-                                                className="w-6 h-6 flex items-center justify-center rounded-md bg-white border border-slate-200 hover:bg-slate-50"
+                                                className="w-6 h-6 flex items-center justify-center rounded-md bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:bg-zinc-900"
                                             >
                                                 <span className="material-symbols-outlined text-xs">
                                                     add
@@ -416,17 +438,17 @@ export default function Cashier() {
                     </div>
 
                     {/* Checkout Section */}
-                    <div className="px-4 py-3 border-t border-slate-100 space-y-2.5 bg-slate-50/50">
+                    <div className="px-4 py-3 border-t border-slate-100 dark:border-zinc-800 space-y-2.5 bg-slate-50 dark:bg-zinc-900/50">
                         <div className="space-y-1.5">
                             <div className="flex justify-between text-xs">
-                                <span className="text-slate-500">Subtotal</span>
+                                <span className="text-slate-500 dark:text-zinc-400">Subtotal</span>
                                 <span className="font-bold">
                                     {formatRupiah(subtotal)}
                                 </span>
                             </div>
                             <div className="flex justify-between items-center text-xs">
-                                <span className="text-slate-500">
-                                    Tax (10%)
+                                <span className="text-slate-500 dark:text-zinc-400">
+                                    Tax ({standardTaxRate}%)
                                 </span>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input
@@ -437,15 +459,15 @@ export default function Cashier() {
                                             setTaxEnabled(e.target.checked)
                                         }
                                     />
-                                    <div className="w-8 h-4 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-primary"></div>
+                                    <div className="w-8 h-4 bg-slate-200 dark:bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-zinc-950 after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-primary"></div>
                                 </label>
                             </div>
                             {taxEnabled && (
                                 <div className="flex justify-between text-xs">
-                                    <span className="text-slate-400">
+                                    <span className="text-slate-400 dark:text-zinc-400">
                                         Tax amount
                                     </span>
-                                    <span className="text-slate-500">
+                                    <span className="text-slate-500 dark:text-zinc-400">
                                         +{formatRupiah(tax)}
                                     </span>
                                 </div>
@@ -461,11 +483,11 @@ export default function Cashier() {
                                 </div>
                             )}
                             <div className="flex justify-between items-center gap-3 text-xs">
-                                <span className="text-slate-500 whitespace-nowrap">
+                                <span className="text-slate-500 dark:text-zinc-400 whitespace-nowrap">
                                     Discount code
                                 </span>
                                 <input
-                                    className="flex-1 px-2 py-0.5 text-right bg-transparent border-b border-slate-300 focus:border-primary outline-none transition-colors text-primary font-bold text-xs"
+                                    className="flex-1 px-2 py-0.5 text-right bg-transparent border-b border-slate-300 dark:border-zinc-800 focus:border-primary outline-none transition-colors text-primary font-bold text-xs"
                                     placeholder="CODE10"
                                     type="text"
                                     value={discountCode}
@@ -477,23 +499,23 @@ export default function Cashier() {
                         </div>
 
                         {/* Payment Method */}
-                        <div className="flex gap-1.5">
-                            {["cash", "card", "qris"].map((method) => (
+                        <div className="flex gap-1.5 flex-wrap">
+                            {activePaymentMethods.map((method) => (
                                 <button
-                                    key={method}
-                                    onClick={() => setPaymentMethod(method)}
-                                    className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-colors ${paymentMethod === method
+                                    key={method.id}
+                                    onClick={() => setPaymentMethod(method.id)}
+                                    className={`flex-1 min-w-[30%] py-1.5 rounded-lg text-[10px] font-bold uppercase transition-colors ${paymentMethod === method.id
                                         ? "bg-primary text-white"
-                                        : "bg-white border border-slate-200 text-slate-500 hover:bg-slate-50"
+                                        : "bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-500 dark:text-zinc-400 hover:bg-slate-50 dark:bg-zinc-900"
                                         }`}
                                 >
-                                    {method}
+                                    {method.name}
                                 </button>
                             ))}
                         </div>
 
-                        <div className="pt-2 border-t border-slate-200 flex justify-between items-end">
-                            <span className="text-xs text-slate-500 font-medium">
+                        <div className="pt-2 border-t border-slate-200 dark:border-zinc-800 flex justify-between items-end">
+                            <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
                                 Total Amount
                             </span>
                             <span className="text-lg font-black text-primary">
@@ -503,13 +525,13 @@ export default function Cashier() {
                         <div className="grid grid-cols-2 gap-1.5">
                             <button
                                 onClick={resetCart}
-                                className="py-2 rounded-xl border border-slate-200 text-xs font-bold hover:bg-white transition-colors"
+                                className="py-2 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs font-bold hover:bg-white dark:bg-zinc-950 transition-colors"
                             >
                                 Reset
                             </button>
                             <button
                                 disabled={cart.length === 0}
-                                className="py-2 rounded-xl border border-slate-200 text-xs font-bold hover:bg-white transition-colors disabled:opacity-50"
+                                className="py-2 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs font-bold hover:bg-white dark:bg-zinc-950 transition-colors disabled:opacity-50"
                             >
                                 Pending
                             </button>
@@ -537,7 +559,7 @@ export default function Cashier() {
             {/* Receipt Modal */}
             {showReceipt && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden">
+                    <div className="bg-white dark:bg-zinc-950 rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden">
                         {/* Receipt Content */}
                         <div className="p-8 text-center" id="receipt-content">
                             <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
@@ -545,23 +567,23 @@ export default function Cashier() {
                                     check_circle
                                 </span>
                             </div>
-                            <h3 className="text-xl font-black text-slate-900 mb-1">
+                            <h3 className="text-xl font-black text-slate-900 dark:text-white mb-1">
                                 Payment Successful!
                             </h3>
-                            <p className="text-slate-400 text-sm font-mono mb-6">
+                            <p className="text-slate-400 dark:text-zinc-400 text-sm font-mono mb-6">
                                 {showReceipt.orderNumber}
                             </p>
 
-                            <div className="border-t border-dashed border-slate-200 pt-4 space-y-2 text-left">
+                            <div className="border-t border-dashed border-slate-200 dark:border-zinc-800 pt-4 space-y-2 text-left">
                                 {showReceipt.items.map((item, i) => (
                                     <div
                                         key={i}
                                         className="flex justify-between text-sm"
                                     >
-                                        <span className="text-slate-600">
+                                        <span className="text-slate-600 dark:text-zinc-400">
                                             {item.quantity}× {item.name}
                                         </span>
-                                        <span className="font-bold text-slate-800">
+                                        <span className="font-bold text-slate-800 dark:text-zinc-100">
                                             {formatRupiah(
                                                 item.price * item.quantity
                                             )}
@@ -570,9 +592,9 @@ export default function Cashier() {
                                 ))}
                             </div>
 
-                            <div className="border-t border-dashed border-slate-200 mt-4 pt-4 space-y-1 text-left">
+                            <div className="border-t border-dashed border-slate-200 dark:border-zinc-800 mt-4 pt-4 space-y-1 text-left">
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-slate-500">
+                                    <span className="text-slate-500 dark:text-zinc-400">
                                         Subtotal
                                     </span>
                                     <span>
@@ -581,7 +603,7 @@ export default function Cashier() {
                                 </div>
                                 {showReceipt.tax > 0 && (
                                     <div className="flex justify-between text-sm">
-                                        <span className="text-slate-500">
+                                        <span className="text-slate-500 dark:text-zinc-400">
                                             Tax
                                         </span>
                                         <span>
@@ -602,7 +624,7 @@ export default function Cashier() {
                                         </span>
                                     </div>
                                 )}
-                                <div className="flex justify-between text-base font-black pt-2 border-t border-slate-100">
+                                <div className="flex justify-between text-base font-black pt-2 border-t border-slate-100 dark:border-zinc-800">
                                     <span>Total</span>
                                     <span className="text-primary">
                                         {formatRupiah(showReceipt.total)}
@@ -610,7 +632,7 @@ export default function Cashier() {
                                 </div>
                             </div>
 
-                            <div className="mt-4 pt-4 border-t border-dashed border-slate-200 text-xs text-slate-400">
+                            <div className="mt-4 pt-4 border-t border-dashed border-slate-200 dark:border-zinc-800 text-xs text-slate-400 dark:text-zinc-400">
                                 <p>
                                     Payment:{" "}
                                     {showReceipt.paymentMethod.toUpperCase()}
@@ -618,17 +640,17 @@ export default function Cashier() {
                                 <p>
                                     {showReceipt.date.toLocaleString("id-ID")}
                                 </p>
-                                <p className="mt-2 font-bold text-slate-500">
-                                    Thank you for visiting Kael Cafe ☕
+                                <p className="mt-2 font-bold text-slate-500 dark:text-zinc-400">
+                                    {receiptFooter || `Thank you for visiting ${storeName} ☕`}
                                 </p>
                             </div>
                         </div>
 
-                        <div className="p-4 border-t border-slate-100 space-y-2">
+                        <div className="p-4 border-t border-slate-100 dark:border-zinc-800 space-y-2">
                             <div className="flex gap-2">
                                 <button
                                     onClick={handlePrint}
-                                    className="flex-1 py-3 bg-slate-100 rounded-xl font-bold text-sm text-slate-700 hover:bg-slate-200 transition-colors flex items-center justify-center gap-2"
+                                    className="flex-1 py-3 bg-slate-100 dark:bg-zinc-800 rounded-xl font-bold text-sm text-slate-700 dark:text-zinc-200 hover:bg-slate-200 dark:bg-zinc-800 transition-colors flex items-center justify-center gap-2"
                                 >
                                     <span className="material-symbols-outlined text-lg">
                                         print

@@ -34,7 +34,7 @@ export default function AuthProvider({ children }) {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-screen bg-background-light">
+            <div className="flex items-center justify-center h-screen bg-background-light dark:bg-background-dark">
                 <div className="text-center">
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary shadow-lg shadow-primary/30 mb-4">
                         <span className="material-symbols-outlined text-white text-3xl">coffee_maker</span>

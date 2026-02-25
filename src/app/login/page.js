@@ -41,15 +41,15 @@ export default function LoginPage() {
                     <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-primary shadow-lg shadow-primary/30 mb-4">
                         <span className="material-symbols-outlined text-white text-4xl">coffee_maker</span>
                     </div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">Kael Cafe</h1>
-                    <p className="text-slate-500 mt-1 text-sm">Point of Sale Terminal</p>
+                    <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Kael Cafe</h1>
+                    <p className="text-slate-500 dark:text-zinc-400 mt-1 text-sm">Point of Sale Terminal</p>
                 </div>
 
                 {/* Login Form */}
-                <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8 space-y-6">
+                <form onSubmit={handleSubmit} className="bg-white dark:bg-zinc-950 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 dark:border-zinc-800 p-8 space-y-6">
                     <div className="text-center">
-                        <h2 className="text-lg font-bold text-slate-900">Welcome Back</h2>
-                        <p className="text-sm text-slate-500 mt-1">Login dengan email dan PIN</p>
+                        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Welcome Back</h2>
+                        <p className="text-sm text-slate-500 dark:text-zinc-400 mt-1">Login dengan email dan PIN</p>
                     </div>
 
                     {error && (
@@ -61,24 +61,24 @@ export default function LoginPage() {
 
                     <div className="space-y-4">
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700">Email</label>
+                            <label className="text-sm font-semibold text-slate-700 dark:text-zinc-200">Email</label>
                             <div className="relative">
-                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">mail</span>
+                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-zinc-400 text-xl">mail</span>
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="staff@kaelcafe.com"
                                     required
-                                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all text-sm"
+                                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 focus:bg-white dark:bg-zinc-950 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all text-sm"
                                 />
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700">PIN</label>
+                            <label className="text-sm font-semibold text-slate-700 dark:text-zinc-200">PIN</label>
                             <div className="relative">
-                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">pin</span>
+                                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-zinc-400 text-xl">pin</span>
                                 <input
                                     type="password"
                                     value={pin}
@@ -86,7 +86,7 @@ export default function LoginPage() {
                                     placeholder="••••"
                                     required
                                     maxLength={8}
-                                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all text-sm tracking-[0.3em]"
+                                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 focus:bg-white dark:bg-zinc-950 focus:border-primary focus:ring-2 focus:ring-primary/10 outline-none transition-all text-sm tracking-[0.3em]"
                                 />
                             </div>
                         </div>
@@ -108,7 +108,7 @@ export default function LoginPage() {
                     </button>
                 </form>
 
-                <p className="text-center text-xs text-slate-400 mt-6">
+                <p className="text-center text-xs text-slate-400 dark:text-zinc-400 mt-6">
                     © 2026 Kael Cafe — All rights reserved
                 </p>
             </div>

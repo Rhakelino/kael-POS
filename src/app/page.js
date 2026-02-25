@@ -13,7 +13,7 @@ const STATUS_BADGE = {
     new: "bg-blue-100 text-blue-700",
     preparing: "bg-amber-100 text-amber-700",
     ready: "bg-emerald-100 text-emerald-700",
-    completed: "bg-slate-100 text-slate-500",
+    completed: "bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400",
 };
 
 export default function Dashboard() {
@@ -49,30 +49,30 @@ export default function Dashboard() {
     return (
         <main className="flex-1 flex flex-col overflow-y-auto">
             {/* Header */}
-            <header className="h-16 flex items-center justify-between px-4 pl-14 lg:px-8 bg-white border-b border-slate-200 sticky top-0 z-10">
+            <header className="h-16 flex items-center justify-between px-4 pl-14 lg:px-8 bg-white dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800 sticky top-0 z-10">
                 <div className="flex items-center gap-2 lg:gap-4">
-                    <div className="hidden sm:flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
+                    <div className="hidden sm:flex items-center gap-2 bg-slate-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full border border-slate-200 dark:border-zinc-800">
                         <span className="material-symbols-outlined text-primary text-sm">
                             wb_sunny
                         </span>
-                        <span className="text-sm font-semibold text-slate-700">
+                        <span className="text-sm font-semibold text-slate-700 dark:text-zinc-200">
                             Active Shift
                         </span>
                     </div>
-                    <div className="text-sm text-slate-500 font-medium">
+                    <div className="text-sm text-slate-500 dark:text-zinc-400 font-medium">
                         {today}
                     </div>
                 </div>
                 <div className="flex items-center gap-2 lg:gap-4">
                     <button
                         onClick={loadData}
-                        className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition-colors"
+                        className="p-2 rounded-xl text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:bg-zinc-800 transition-colors"
                     >
                         <span className="material-symbols-outlined">
                             refresh
                         </span>
                     </button>
-                    <button className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition-colors relative">
+                    <button className="p-2 rounded-xl text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:bg-zinc-800 transition-colors relative">
                         <span className="material-symbols-outlined">
                             notifications
                         </span>
@@ -85,10 +85,10 @@ export default function Dashboard() {
                 {/* Hero */}
                 <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                     <div>
-                        <h2 className="text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">
+                        <h2 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                             Dashboard Overview
                         </h2>
-                        <p className="text-slate-500 mt-1 text-sm lg:text-base">
+                        <p className="text-slate-500 dark:text-zinc-400 mt-1 text-sm lg:text-base">
                             Track your cafe&apos;s live performance.
                         </p>
                     </div>
@@ -101,7 +101,7 @@ export default function Dashboard() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                        <div className="bg-white p-5 lg:p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div className="bg-white dark:bg-zinc-950 p-5 lg:p-6 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-sm">
                             <div className="flex justify-between items-start mb-4">
                                 <div className="p-2 bg-primary/10 rounded-lg text-primary">
                                     <span className="material-symbols-outlined">
@@ -109,14 +109,14 @@ export default function Dashboard() {
                                     </span>
                                 </div>
                             </div>
-                            <p className="text-slate-500 text-sm font-medium">
+                            <p className="text-slate-500 dark:text-zinc-400 text-sm font-medium">
                                 Total Sales
                             </p>
-                            <p className="text-xl lg:text-2xl font-black text-slate-900 mt-1">
+                            <p className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white mt-1">
                                 {formatRupiah(stats?.totalRevenue || 0)}
                             </p>
                         </div>
-                        <div className="bg-white p-5 lg:p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div className="bg-white dark:bg-zinc-950 p-5 lg:p-6 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-sm">
                             <div className="flex justify-between items-start mb-4">
                                 <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
                                     <span className="material-symbols-outlined">
@@ -124,14 +124,14 @@ export default function Dashboard() {
                                     </span>
                                 </div>
                             </div>
-                            <p className="text-slate-500 text-sm font-medium">
+                            <p className="text-slate-500 dark:text-zinc-400 text-sm font-medium">
                                 Completed Orders
                             </p>
-                            <p className="text-xl lg:text-2xl font-black text-slate-900 mt-1">
+                            <p className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white mt-1">
                                 {stats?.orderCount || 0}
                             </p>
                         </div>
-                        <div className="bg-white p-5 lg:p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div className="bg-white dark:bg-zinc-950 p-5 lg:p-6 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-sm">
                             <div className="flex justify-between items-start mb-4">
                                 <div className="p-2 bg-amber-100 rounded-lg text-amber-600">
                                     <span className="material-symbols-outlined">
@@ -139,14 +139,14 @@ export default function Dashboard() {
                                     </span>
                                 </div>
                             </div>
-                            <p className="text-slate-500 text-sm font-medium">
+                            <p className="text-slate-500 dark:text-zinc-400 text-sm font-medium">
                                 Pending Orders
                             </p>
-                            <p className="text-xl lg:text-2xl font-black text-slate-900 mt-1">
+                            <p className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white mt-1">
                                 {stats?.pendingOrders || 0}
                             </p>
                         </div>
-                        <div className="bg-white p-5 lg:p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div className="bg-white dark:bg-zinc-950 p-5 lg:p-6 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-sm">
                             <div className="flex justify-between items-start mb-4">
                                 <div className="p-2 bg-emerald-100 rounded-lg text-emerald-600">
                                     <span className="material-symbols-outlined">
@@ -154,10 +154,10 @@ export default function Dashboard() {
                                     </span>
                                 </div>
                             </div>
-                            <p className="text-slate-500 text-sm font-medium">
+                            <p className="text-slate-500 dark:text-zinc-400 text-sm font-medium">
                                 Active Products
                             </p>
-                            <p className="text-xl lg:text-2xl font-black text-slate-900 mt-1">
+                            <p className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white mt-1">
                                 {stats?.activeProducts || 0}
                             </p>
                         </div>
@@ -167,8 +167,8 @@ export default function Dashboard() {
                 {/* Main Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
                     {/* Recent Orders Table */}
-                    <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                        <div className="p-4 lg:p-6 border-b border-slate-200 flex items-center justify-between">
+                    <div className="lg:col-span-2 bg-white dark:bg-zinc-950 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+                        <div className="p-4 lg:p-6 border-b border-slate-200 dark:border-zinc-800 flex items-center justify-between">
                             <h3 className="text-base lg:text-lg font-bold">
                                 Recent Orders
                             </h3>
@@ -182,7 +182,7 @@ export default function Dashboard() {
                         <div className="overflow-x-auto">
                             <table className="w-full text-left whitespace-nowrap">
                                 <thead>
-                                    <tr className="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                                    <tr className="bg-slate-50 dark:bg-zinc-900 text-slate-500 dark:text-zinc-400 text-xs font-bold uppercase tracking-wider">
                                         <th className="px-4 lg:px-6 py-4">
                                             Order ID
                                         </th>
@@ -205,7 +205,7 @@ export default function Dashboard() {
                                         <tr>
                                             <td
                                                 colSpan={5}
-                                                className="px-6 py-8 text-center text-slate-400 text-sm"
+                                                className="px-6 py-8 text-center text-slate-400 dark:text-zinc-400 text-sm"
                                             >
                                                 No orders yet. Go to Cashier to
                                                 create one!
@@ -215,12 +215,12 @@ export default function Dashboard() {
                                         recentOrders.map((order) => (
                                             <tr
                                                 key={order.id}
-                                                className="hover:bg-slate-50 transition-colors"
+                                                className="hover:bg-slate-50 dark:bg-zinc-900 transition-colors"
                                             >
-                                                <td className="px-6 py-4 text-sm font-bold text-slate-900">
+                                                <td className="px-6 py-4 text-sm font-bold text-slate-900 dark:text-white">
                                                     #{order.orderNumber}
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-slate-600">
+                                                <td className="px-6 py-4 text-sm text-slate-600 dark:text-zinc-400">
                                                     {order.items
                                                         ?.slice(0, 2)
                                                         .map(
@@ -240,7 +240,7 @@ export default function Dashboard() {
                                                         {order.status}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-slate-500">
+                                                <td className="px-6 py-4 text-sm text-slate-500 dark:text-zinc-400">
                                                     {new Date(
                                                         order.createdAt
                                                     ).toLocaleTimeString(
@@ -264,13 +264,13 @@ export default function Dashboard() {
                     </div>
 
                     {/* Popular Items */}
-                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div className="bg-white dark:bg-zinc-950 p-6 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-sm">
                         <h3 className="text-lg font-bold mb-6">
                             Top Selling Items
                         </h3>
                         <div className="space-y-4">
                             {topItems.length === 0 ? (
-                                <p className="text-sm text-slate-400 text-center py-8">
+                                <p className="text-sm text-slate-400 dark:text-zinc-400 text-center py-8">
                                     No sales data yet
                                 </p>
                             ) : (
@@ -286,7 +286,7 @@ export default function Dashboard() {
                                             <p className="text-sm font-bold truncate">
                                                 {item.productName}
                                             </p>
-                                            <p className="text-xs text-slate-500">
+                                            <p className="text-xs text-slate-500 dark:text-zinc-400">
                                                 {item.totalQuantity} sold
                                             </p>
                                         </div>
@@ -303,7 +303,7 @@ export default function Dashboard() {
                         </div>
                         <Link
                             href="/menu"
-                            className="block w-full mt-6 py-2 border border-slate-200 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-50 transition-colors text-center"
+                            className="block w-full mt-6 py-2 border border-slate-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-slate-500 dark:text-zinc-400 hover:bg-slate-50 dark:bg-zinc-900 transition-colors text-center"
                         >
                             View Menu
                         </Link>

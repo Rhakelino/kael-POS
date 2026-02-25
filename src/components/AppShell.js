@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import AuthProvider from "./AuthProvider";
 import Sidebar from "./Sidebar";
+import SettingsProvider from "./SettingsProvider";
 
 export default function AppShell({ children }) {
     const pathname = usePathname();
@@ -10,14 +11,16 @@ export default function AppShell({ children }) {
 
     return (
         <AuthProvider>
-            {isLoginPage ? (
-                children
-            ) : (
-                <div className="flex h-screen overflow-hidden">
-                    <Sidebar />
-                    {children}
-                </div>
-            )}
+            <SettingsProvider>
+                {isLoginPage ? (
+                    children
+                ) : (
+                    <div className="flex h-screen overflow-hidden">
+                        <Sidebar />
+                        {children}
+                    </div>
+                )}
+            </SettingsProvider>
         </AuthProvider>
     );
 }

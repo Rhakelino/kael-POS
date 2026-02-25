@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { getOrders, updateOrderStatus } from "@/actions/orders";
+import { useSettings } from "@/components/SettingsProvider";
 
 function formatRupiah(num) {
     return "Rp " + Number(num).toLocaleString("id-ID");
@@ -35,14 +36,14 @@ const STATUS_CONFIG = {
         border: "border-emerald-100",
         icon: "done",
         action: "Complete",
-        actionBg: "bg-slate-100 text-slate-600 hover:bg-slate-200",
+        actionBg: "bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:bg-slate-200 dark:bg-zinc-800",
         nextStatus: "completed",
     },
     completed: {
         label: "Completed",
-        bg: "bg-slate-100",
-        text: "text-slate-500",
-        border: "border-slate-200",
+        bg: "bg-slate-100 dark:bg-zinc-800",
+        text: "text-slate-500 dark:text-zinc-400",
+        border: "border-slate-200 dark:border-zinc-800",
         icon: "done_all",
     },
 };
@@ -54,6 +55,8 @@ export default function Orders() {
     const [isLoading, setIsLoading] = useState(true);
     const [updatingId, setUpdatingId] = useState(null);
     const [receiptOrder, setReceiptOrder] = useState(null);
+
+    const { storeName, receiptFooter } = useSettings();
 
     const loadOrders = useCallback(async () => {
         setIsLoading(true);
@@ -99,19 +102,19 @@ export default function Orders() {
     };
 
     return (
-        <main className="flex-1 flex flex-col bg-slate-50 overflow-y-auto">
-            <header className="px-4 pl-14 lg:px-8 py-4 lg:py-6 bg-white border-b border-slate-200 sticky top-0 z-10 flex flex-col gap-4 md:flex-row md:items-center justify-between">
+        <main className="flex-1 flex flex-col bg-slate-50 dark:bg-zinc-900 overflow-y-auto">
+            <header className="px-4 pl-14 lg:px-8 py-4 lg:py-6 bg-white dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800 sticky top-0 z-10 flex flex-col gap-4 md:flex-row md:items-center justify-between">
                 <div>
-                    <h2 className="text-xl lg:text-2xl font-bold text-slate-900 tracking-tight">
+                    <h2 className="text-xl lg:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
                         Order Management
                     </h2>
-                    <p className="text-xs lg:text-sm text-slate-500 mt-1">
+                    <p className="text-xs lg:text-sm text-slate-500 dark:text-zinc-400 mt-1">
                         Track and manage incoming cafe orders.
                     </p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <div className="relative flex-1">
-                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">
+                        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-zinc-400 text-sm">
                             search
                         </span>
                         <input
@@ -119,12 +122,12 @@ export default function Orders() {
                             placeholder="Search by Order ID..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 bg-slate-100 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary sm:w-64 lg:w-80"
+                            className="w-full pl-9 pr-4 py-2 bg-slate-100 dark:bg-zinc-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary sm:w-64 lg:w-80"
                         />
                     </div>
                     <button
                         onClick={loadOrders}
-                        className="flex items-center justify-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-lg font-medium text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                        className="flex items-center justify-center gap-2 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 px-4 py-2 rounded-lg font-medium text-sm text-slate-700 dark:text-zinc-200 hover:bg-slate-50 dark:bg-zinc-900 transition-colors"
                     >
                         <span className="material-symbols-outlined text-[18px]">
                             refresh
@@ -141,7 +144,7 @@ export default function Orders() {
                         onClick={() => setStatusFilter(null)}
                         className={`px-5 py-2.5 rounded-lg text-sm font-semibold whitespace-nowrap ${statusFilter === null
                             ? "bg-primary text-white shadow-sm shadow-primary/20"
-                            : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+                            : "bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:bg-zinc-900"
                             }`}
                     >
                         All Orders ({statusCounts.all})
@@ -152,7 +155,7 @@ export default function Orders() {
                             onClick={() => setStatusFilter(key)}
                             className={`px-5 py-2.5 rounded-lg text-sm font-semibold whitespace-nowrap ${statusFilter === key
                                 ? "bg-primary text-white shadow-sm shadow-primary/20"
-                                : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
+                                : "bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:bg-zinc-900"
                                 }`}
                         >
                             {config.label} ({statusCounts[key] || 0})
@@ -161,11 +164,11 @@ export default function Orders() {
                 </div>
 
                 {/* Orders Table */}
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="bg-white dark:bg-zinc-950 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider font-bold">
+                                <tr className="bg-slate-50 dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 text-slate-500 dark:text-zinc-400 text-xs uppercase tracking-wider font-bold">
                                     <th className="px-6 py-4">Order ID</th>
                                     <th className="px-6 py-4">Items</th>
                                     <th className="px-6 py-4">Total</th>
@@ -191,7 +194,7 @@ export default function Orders() {
                                     <tr>
                                         <td
                                             colSpan={7}
-                                            className="px-6 py-12 text-center text-slate-400"
+                                            className="px-6 py-12 text-center text-slate-400 dark:text-zinc-400"
                                         >
                                             <span className="material-symbols-outlined text-4xl mb-2 block">
                                                 receipt_long
@@ -208,16 +211,16 @@ export default function Orders() {
                                         return (
                                             <tr
                                                 key={order.id}
-                                                className={`hover:bg-slate-50 transition-colors group ${isCompleted
+                                                className={`hover:bg-slate-50 dark:bg-zinc-900 transition-colors group ${isCompleted
                                                     ? "opacity-75"
                                                     : ""
                                                     }`}
                                             >
-                                                <td className="px-6 py-4 font-bold text-slate-900">
+                                                <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">
                                                     #{order.orderNumber}
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <p className="text-sm font-medium text-slate-700">
+                                                    <p className="text-sm font-medium text-slate-700 dark:text-zinc-200">
                                                         {order.items
                                                             ?.slice(0, 2)
                                                             .map(
@@ -234,15 +237,15 @@ export default function Orders() {
                                                         items
                                                     </p>
                                                 </td>
-                                                <td className="px-6 py-4 font-bold text-slate-900">
+                                                <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">
                                                     {formatRupiah(order.total)}
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <span className="uppercase text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                                                    <span className="uppercase text-xs font-bold text-slate-500 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-800 px-2 py-1 rounded">
                                                         {order.paymentMethod}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-slate-500">
+                                                <td className="px-6 py-4 text-sm text-slate-500 dark:text-zinc-400">
                                                     {new Date(
                                                         order.createdAt
                                                     ).toLocaleTimeString(
@@ -299,7 +302,7 @@ export default function Orders() {
                                                                     order
                                                                 )
                                                             }
-                                                            className="p-1.5 text-slate-400 hover:text-primary transition-colors"
+                                                            className="p-1.5 text-slate-400 dark:text-zinc-400 hover:text-primary transition-colors"
                                                         >
                                                             <span className="material-symbols-outlined text-[20px]">
                                                                 receipt_long
@@ -315,7 +318,7 @@ export default function Orders() {
                         </table>
                     </div>
 
-                    <div className="p-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500">
+                    <div className="p-4 border-t border-slate-200 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500 dark:text-zinc-400">
                         <p className="text-center sm:text-left">
                             Showing {filteredOrders.length} of {orders.length}{" "}
                             entries
@@ -327,22 +330,22 @@ export default function Orders() {
             {/* Receipt Modal */}
             {receiptOrder && (
                 <div onClick={() => setReceiptOrder(null)} className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden">
+                    <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-zinc-950 rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden">
                         <div className="p-8 text-center">
-                            <h3 className="text-lg font-black text-slate-900 mb-1">
+                            <h3 className="text-lg font-black text-slate-900 dark:text-white mb-1">
                                 Order Receipt
                             </h3>
-                            <p className="text-slate-400 text-sm font-mono mb-6">
+                            <p className="text-slate-400 dark:text-zinc-400 text-sm font-mono mb-6">
                                 #{receiptOrder.orderNumber}
                             </p>
 
-                            <div className="border-t border-dashed border-slate-200 pt-4 space-y-2 text-left">
+                            <div className="border-t border-dashed border-slate-200 dark:border-zinc-800 pt-4 space-y-2 text-left">
                                 {receiptOrder.items?.map((item, i) => (
                                     <div
                                         key={i}
                                         className="flex justify-between text-sm"
                                     >
-                                        <span className="text-slate-600">
+                                        <span className="text-slate-600 dark:text-zinc-400">
                                             {item.quantity}×{" "}
                                             {item.productName}
                                         </span>
@@ -353,9 +356,9 @@ export default function Orders() {
                                 ))}
                             </div>
 
-                            <div className="border-t border-dashed border-slate-200 mt-4 pt-4 space-y-1 text-left">
+                            <div className="border-t border-dashed border-slate-200 dark:border-zinc-800 mt-4 pt-4 space-y-1 text-left">
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-slate-500">
+                                    <span className="text-slate-500 dark:text-zinc-400">
                                         Subtotal
                                     </span>
                                     <span>
@@ -363,7 +366,7 @@ export default function Orders() {
                                     </span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-slate-500">Tax</span>
+                                    <span className="text-slate-500 dark:text-zinc-400">Tax</span>
                                     <span>
                                         +{formatRupiah(receiptOrder.tax)}
                                     </span>
@@ -381,7 +384,7 @@ export default function Orders() {
                                         </span>
                                     </div>
                                 )}
-                                <div className="flex justify-between text-base font-black pt-2 border-t border-slate-100">
+                                <div className="flex justify-between text-base font-black pt-2 border-t border-slate-100 dark:border-zinc-800">
                                     <span>Total</span>
                                     <span className="text-primary">
                                         {formatRupiah(receiptOrder.total)}
@@ -389,7 +392,7 @@ export default function Orders() {
                                 </div>
                             </div>
 
-                            <div className="mt-4 pt-4 border-t border-dashed border-slate-200 text-xs text-slate-400">
+                            <div className="mt-4 pt-4 border-t border-dashed border-slate-200 dark:border-zinc-800 text-xs text-slate-400 dark:text-zinc-400">
                                 <p>
                                     Payment:{" "}
                                     {receiptOrder.paymentMethod?.toUpperCase()}
@@ -399,16 +402,16 @@ export default function Orders() {
                                         receiptOrder.createdAt
                                     ).toLocaleString("id-ID")}
                                 </p>
-                                <p className="mt-2 font-bold text-slate-500">
-                                    Kael Cafe ☕
+                                <p className="mt-2 font-bold text-slate-500 dark:text-zinc-400">
+                                    {receiptFooter || `Thank you for visiting ${storeName} ☕`}
                                 </p>
                             </div>
                         </div>
 
-                        <div className="p-4 border-t border-slate-100 flex gap-2 print:hidden">
+                        <div className="p-4 border-t border-slate-100 dark:border-zinc-800 flex gap-2 print:hidden">
                             <button
                                 onClick={() => window.print()}
-                                className="flex-1 py-3 bg-slate-100 rounded-xl font-bold text-sm text-slate-700 hover:bg-slate-200 transition-colors flex items-center justify-center gap-2"
+                                className="flex-1 py-3 bg-slate-100 dark:bg-zinc-800 rounded-xl font-bold text-sm text-slate-700 dark:text-zinc-200 hover:bg-slate-200 dark:bg-zinc-800 transition-colors flex items-center justify-center gap-2"
                             >
                                 <span className="material-symbols-outlined text-lg">print</span>
                                 Print

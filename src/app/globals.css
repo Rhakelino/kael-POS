@@ -1,9 +1,11 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme inline {
   --color-primary: #8a5e3d;
   --color-background-light: #f7f7f6;
-  --color-background-dark: #1d1815;
+  --color-background-dark: #09090b;
   --font-display: var(--font-inter);
   --radius-DEFAULT: 0.5rem;
   --radius-lg: 1rem;
