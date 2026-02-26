@@ -60,7 +60,7 @@ export default function Sidebar() {
                         </div>
                         <div className="flex flex-col">
                             <h1 className="text-slate-900 dark:text-white text-base font-bold leading-none">{storeName}</h1>
-                            <p className="text-slate-500 dark:text-zinc-400 text-xs mt-1">POS Terminal</p>
+                            <p className="text-slate-500 dark:text-zinc-400 text-xs mt-1">POS Dashboard</p>
                         </div>
                     </div>
                     <button onClick={() => setIsOpen(false)} className="lg:hidden text-slate-400 dark:text-zinc-400 hover:text-slate-600 dark:text-zinc-400">
