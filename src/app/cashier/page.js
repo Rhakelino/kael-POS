@@ -58,7 +58,7 @@ export default function Cashier() {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [cart, setCart] = useState([]);
-    const [taxEnabled, setTaxEnabled] = useState(true);
+    const [taxEnabled, setTaxEnabled] = useState(false);
     const [discountCode, setDiscountCode] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -362,7 +362,7 @@ export default function Cashier() {
                     </div>
 
                     {/* Items List */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                    <div className="flex-1 min-h-[200px] overflow-y-auto p-4 space-y-2 bg-muted/10">
                         {cart.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
                                 <div className="p-4 rounded-full bg-muted/50 mb-3">
@@ -373,7 +373,7 @@ export default function Cashier() {
                             </div>
                         ) : (
                             cart.map((item) => (
-                                <div key={item.productId} className="px-3 py-3 bg-muted/40 rounded-xl border border-border group transition-colors hover:bg-muted/60">
+                                <div key={item.productId} className="px-3 py-3 bg-card rounded-xl border border-border group transition-colors hover:border-primary/30 hover:shadow-sm">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="min-w-0 flex-1 pr-2">
                                             <h4 className="text-sm font-bold truncate text-foreground">{item.name}</h4>
@@ -382,12 +382,12 @@ export default function Cashier() {
                                         <span className="text-sm font-bold whitespace-nowrap text-foreground">{formatRupiah(item.price * item.quantity)}</span>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-1 bg-background border border-border rounded-lg p-0.5">
-                                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md" onClick={() => updateQuantity(item.productId, -1)}>
+                                        <div className="flex items-center gap-1 bg-muted/50 border border-border rounded-lg p-0.5">
+                                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md hover:bg-background" onClick={() => updateQuantity(item.productId, -1)}>
                                                 <Minus className="size-3" />
                                             </Button>
                                             <span className="text-xs font-bold w-6 text-center select-none">{item.quantity}</span>
-                                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md text-primary" onClick={() => updateQuantity(item.productId, 1)}>
+                                            <Button variant="ghost" size="icon" className="h-7 w-7 rounded-md text-primary hover:bg-background" onClick={() => updateQuantity(item.productId, 1)}>
                                                 <Plus className="size-3" />
                                             </Button>
                                         </div>
@@ -401,104 +401,109 @@ export default function Cashier() {
                     </div>
 
                     {/* Checkout Section - Compact */}
-                    <div className="px-5 py-4 border-t border-border bg-card shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.05)] z-20 space-y-4 shrink-0">
-                        {/* Summary & Toggles */}
-                        <div className="space-y-2 bg-muted/30 p-3.5 rounded-xl border border-border/50">
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-muted-foreground font-medium">Subtotal</span>
-                                <span className="font-bold text-foreground">{formatRupiah(subtotal)}</span>
+                    <div className="border-t border-border bg-card shadow-[0_-4px_15px_-5px_rgba(0,0,0,0.05)] z-20 flex flex-col shrink-2 min-h-[50%] lg:min-h-[45%] max-h-[60vh] lg:max-h-[55vh]">
+                        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+                            {/* Summary & Toggles */}
+                            <div className="space-y-2 bg-muted/30 p-3.5 rounded-xl border border-border/50">
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-muted-foreground font-medium">Subtotal</span>
+                                    <span className="font-bold text-foreground">{formatRupiah(subtotal)}</span>
+                                </div>
+
+                                <div className="flex justify-between items-center text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <Switch id="tax-switch" checked={taxEnabled} onCheckedChange={setTaxEnabled} className="scale-75 origin-left" />
+                                        <Label htmlFor="tax-switch" className="text-muted-foreground cursor-pointer text-xs">Tax ({standardTaxRate}%)</Label>
+                                    </div>
+                                    {taxEnabled && <span className="text-foreground text-xs font-medium">+{formatRupiah(tax)}</span>}
+                                </div>
+
+                                <div className="flex justify-between items-center">
+                                    <div className="flex items-center gap-2">
+                                        <Label htmlFor="discount" className="text-muted-foreground text-xs font-medium whitespace-nowrap">Discount</Label>
+                                        <Input
+                                            id="discount"
+                                            className="h-7 w-28 px-2 text-xs font-bold text-primary placeholder:text-muted-foreground/50 border-border/50 bg-background focus-visible:ring-primary/20 transition-all rounded-md"
+                                            placeholder="CODE"
+                                            value={discountCode}
+                                            onChange={(e) => setDiscountCode(e.target.value)}
+                                        />
+                                    </div>
+                                    {discount > 0 && <span className="text-emerald-600 font-bold text-xs">-{formatRupiah(discount)}</span>}
+                                </div>
                             </div>
 
-                            <div className="flex justify-between items-center text-sm">
-                                <div className="flex items-center gap-2">
-                                    <Switch id="tax-switch" checked={taxEnabled} onCheckedChange={setTaxEnabled} className="scale-75 origin-left" />
-                                    <Label htmlFor="tax-switch" className="text-muted-foreground cursor-pointer text-xs">Tax ({standardTaxRate}%)</Label>
+                            {/* Payment Selection & Action */}
+                            <div className="space-y-3">
+                                {/* Payment Methods */}
+                                <div className="flex gap-2">
+                                    {activePaymentMethods.map((method) => (
+                                        <Button
+                                            key={method.id}
+                                            variant={paymentMethod === method.id ? "default" : "outline"}
+                                            onClick={() => setPaymentMethod(method.id)}
+                                            className={`flex-1 h-9 text-[11px] font-bold uppercase rounded-lg transition-all ${paymentMethod === method.id ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20" : "bg-background border-border/60 text-muted-foreground hover:bg-muted/50"}`}
+                                        >
+                                            {method.name}
+                                        </Button>
+                                    ))}
                                 </div>
-                                {taxEnabled && <span className="text-foreground text-xs font-medium">+{formatRupiah(tax)}</span>}
-                            </div>
 
-                            <div className="flex justify-between items-center">
-                                <div className="flex items-center gap-2">
-                                    <Label htmlFor="discount" className="text-muted-foreground text-xs font-medium whitespace-nowrap">Discount</Label>
-                                    <Input
-                                        id="discount"
-                                        className="h-7 w-28 px-2 text-xs font-bold text-primary placeholder:text-muted-foreground/50 border-border/50 bg-background focus-visible:ring-primary/20 transition-all rounded-md"
-                                        placeholder="CODE"
-                                        value={discountCode}
-                                        onChange={(e) => setDiscountCode(e.target.value)}
-                                    />
-                                </div>
-                                {discount > 0 && <span className="text-emerald-600 font-bold text-xs">-{formatRupiah(discount)}</span>}
+                                {/* Cash Payment Input */}
+                                {isCash && cart.length > 0 && (
+                                    <div className="space-y-2 bg-amber-500/5 p-3.5 rounded-xl border border-amber-500/20">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Banknote className="size-4 text-amber-600" />
+                                            <span className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">Cash Payment</span>
+                                        </div>
+                                        <div className="relative">
+                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">Rp</span>
+                                            <Input
+                                                type="number"
+                                                placeholder="0"
+                                                value={amountPaid}
+                                                onChange={(e) => setAmountPaid(e.target.value)}
+                                                className="pl-10 pr-4 h-11 text-lg font-black text-foreground bg-background border-border/50 rounded-lg focus-visible:ring-amber-500/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            />
+                                        </div>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {getQuickAmounts().map((amount, i) => (
+                                                <Button
+                                                    key={amount}
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => setAmountPaid(String(amount))}
+                                                    className={`h-7 px-2.5 text-[11px] font-bold rounded-lg transition-all ${parsedAmountPaid === amount
+                                                        ? "bg-amber-500 text-white border-amber-500 hover:bg-amber-600 hover:text-white"
+                                                        : "bg-background border-border/60 text-muted-foreground hover:bg-amber-500/10 hover:text-amber-700 hover:border-amber-500/30"
+                                                        }`}
+                                                >
+                                                    {i === 0 ? "Uang Pas" : formatRupiah(amount)}
+                                                </Button>
+                                            ))}
+                                        </div>
+                                        {parsedAmountPaid > 0 && (
+                                            <div className={`flex justify-between items-center p-2.5 rounded-lg mt-1 ${changeAmount >= 0
+                                                ? "bg-emerald-500/10 border border-emerald-500/20"
+                                                : "bg-destructive/10 border border-destructive/20"
+                                                }`}>
+                                                <span className={`text-xs font-bold uppercase tracking-wider ${changeAmount >= 0 ? "text-emerald-600" : "text-destructive"
+                                                    }`}>
+                                                    {changeAmount >= 0 ? "Kembalian" : "Kurang"}
+                                                </span>
+                                                <span className={`text-lg font-black ${changeAmount >= 0 ? "text-emerald-600" : "text-destructive"
+                                                    }`}>
+                                                    {formatRupiah(Math.abs(changeAmount))}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
-                        {/* Payment Selection & Action */}
-                        <div className="space-y-3">
-                            {/* Payment Methods */}
-                            <div className="flex gap-2">
-                                {activePaymentMethods.map((method) => (
-                                    <Button
-                                        key={method.id}
-                                        variant={paymentMethod === method.id ? "default" : "outline"}
-                                        onClick={() => setPaymentMethod(method.id)}
-                                        className={`flex-1 h-9 text-[11px] font-bold uppercase rounded-lg transition-all ${paymentMethod === method.id ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20" : "bg-background border-border/60 text-muted-foreground hover:bg-muted/50"}`}
-                                    >
-                                        {method.name}
-                                    </Button>
-                                ))}
-                            </div>
-
-                            {/* Cash Payment Input */}
-                            {isCash && cart.length > 0 && (
-                                <div className="space-y-2 bg-amber-500/5 p-3.5 rounded-xl border border-amber-500/20">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Banknote className="size-4 text-amber-600" />
-                                        <span className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">Cash Payment</span>
-                                    </div>
-                                    <div className="relative">
-                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">Rp</span>
-                                        <Input
-                                            type="number"
-                                            placeholder="0"
-                                            value={amountPaid}
-                                            onChange={(e) => setAmountPaid(e.target.value)}
-                                            className="pl-10 pr-4 h-11 text-lg font-black text-foreground bg-background border-border/50 rounded-lg focus-visible:ring-amber-500/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                        />
-                                    </div>
-                                    <div className="flex flex-wrap gap-1.5">
-                                        {getQuickAmounts().map((amount, i) => (
-                                            <Button
-                                                key={amount}
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => setAmountPaid(String(amount))}
-                                                className={`h-7 px-2.5 text-[11px] font-bold rounded-lg transition-all ${parsedAmountPaid === amount
-                                                        ? "bg-amber-500 text-white border-amber-500 hover:bg-amber-600 hover:text-white"
-                                                        : "bg-background border-border/60 text-muted-foreground hover:bg-amber-500/10 hover:text-amber-700 hover:border-amber-500/30"
-                                                    }`}
-                                            >
-                                                {i === 0 ? "Uang Pas" : formatRupiah(amount)}
-                                            </Button>
-                                        ))}
-                                    </div>
-                                    {parsedAmountPaid > 0 && (
-                                        <div className={`flex justify-between items-center p-2.5 rounded-lg mt-1 ${changeAmount >= 0
-                                                ? "bg-emerald-500/10 border border-emerald-500/20"
-                                                : "bg-destructive/10 border border-destructive/20"
-                                            }`}>
-                                            <span className={`text-xs font-bold uppercase tracking-wider ${changeAmount >= 0 ? "text-emerald-600" : "text-destructive"
-                                                }`}>
-                                                {changeAmount >= 0 ? "Kembalian" : "Kurang"}
-                                            </span>
-                                            <span className={`text-lg font-black ${changeAmount >= 0 ? "text-emerald-600" : "text-destructive"
-                                                }`}>
-                                                {formatRupiah(Math.abs(changeAmount))}
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
+                        {/* Fixed Bottom Action */}
+                        <div className="px-5 pb-5 pt-3 space-y-3 bg-card border-t border-border/50 shrink-0">
                             <div className="flex gap-2 items-center">
                                 <div className="bg-muted/30 p-2 px-4 rounded-xl border border-border/50 flex flex-col justify-center flex-1 h-12">
                                     <div className="flex justify-between items-center">
