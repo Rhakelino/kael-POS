@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { getCurrentUser } from "@/actions/auth";
 import { usePathname, useRouter } from "next/navigation";
+import { Coffee } from "lucide-react";
 
 const AuthContext = createContext(null);
 
@@ -34,10 +35,10 @@ export default function AuthProvider({ children }) {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-screen bg-background-light dark:bg-background-dark">
+            <div className="flex items-center justify-center h-screen bg-background">
                 <div className="text-center">
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary shadow-lg shadow-primary/30 mb-4">
-                        <span className="material-symbols-outlined text-white text-3xl">coffee_maker</span>
+                        <Coffee className="size-8 text-primary-foreground" />
                     </div>
                     <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mt-4"></div>
                 </div>

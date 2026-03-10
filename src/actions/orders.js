@@ -22,6 +22,7 @@ export async function createOrder({
     discountCode = null,
     notes = null,
     cashierId = null,
+    amountPaid = null,
 }) {
     try {
         const orderNumber = generateOrderNumber();
@@ -61,6 +62,10 @@ export async function createOrder({
         }
         const total = subtotal + tax - discount;
 
+        // Calculate change for cash payments
+        const paidAmount = paymentMethod === "cash" && amountPaid ? amountPaid : null;
+        const changeAmount = paidAmount ? paidAmount - total : null;
+
         // Use a transaction to insert both order and items
         const orderId = crypto.randomUUID();
         const now = new Date();
@@ -76,6 +81,8 @@ export async function createOrder({
                     discount,
                     total,
                     paymentMethod,
+                    amountPaid: paidAmount,
+                    changeAmount,
                     status: "new",
                     cashierId,
                     notes,
@@ -96,7 +103,7 @@ export async function createOrder({
 
         transaction();
 
-        return { success: true, orderId, orderNumber, total };
+        return { success: true, orderId, orderNumber, total, amountPaid: paidAmount, changeAmount };
     } catch (error) {
         return { success: false, error: error.message };
     }

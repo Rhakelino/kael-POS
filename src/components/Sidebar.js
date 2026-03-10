@@ -6,6 +6,29 @@ import { useState, useEffect } from "react";
 import { useAuth } from "./AuthProvider";
 import { useSettings } from "./SettingsProvider";
 import { logout } from "@/actions/auth";
+import {
+    LayoutDashboard,
+    ShoppingBag,
+    UtensilsCrossed,
+    MonitorStop,
+    Settings,
+    LogOut,
+    Coffee,
+    Menu,
+    User,
+    ChevronLeft,
+    ChevronRight
+} from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+
+const navItems = [
+    { name: "Dashboard", path: "/", icon: LayoutDashboard },
+    { name: "Orders", path: "/orders", icon: ShoppingBag },
+    { name: "Menu", path: "/menu", icon: UtensilsCrossed },
+    { name: "Cashier", path: "/cashier", icon: MonitorStop },
+    { name: "Settings", path: "/settings", icon: Settings },
+];
 
 export default function Sidebar() {
     const pathname = usePathname();
@@ -14,19 +37,27 @@ export default function Sidebar() {
     const { storeName } = useSettings();
     const [isOpen, setIsOpen] = useState(false);
 
-    // Close sidebar on route change on mobile
+    // Default to not collapsed on first render, then sync with localStorage
+    const [isCollapsed, setIsCollapsed] = useState(false);
+
     useEffect(() => {
-        // eslint-disable-next-line
         setIsOpen(false);
     }, [pathname]);
 
-    const navItems = [
-        { name: "Dashboard", path: "/", icon: "dashboard" },
-        { name: "Orders", path: "/orders", icon: "shopping_bag" },
-        { name: "Menu", path: "/menu", icon: "restaurant_menu" },
-        { name: "Cashier", path: "/cashier", icon: "point_of_sale" },
-        { name: "Settings", path: "/settings", icon: "settings" },
-    ];
+    useEffect(() => {
+        const savedCollapsed = localStorage.getItem("sidebarCollapsed");
+        if (savedCollapsed === "true") {
+            setIsCollapsed(true);
+        }
+    }, []);
+
+    const toggleCollapse = () => {
+        setIsCollapsed((prev) => {
+            const newState = !prev;
+            localStorage.setItem("sidebarCollapsed", newState);
+            return newState;
+        });
+    };
 
     const handleLogout = async () => {
         await logout();
@@ -34,81 +65,111 @@ export default function Sidebar() {
         router.refresh();
     };
 
-    return (
-        <>
-            {/* Mobile menu button */}
-            <button
-                onClick={() => setIsOpen(true)}
-                className="lg:hidden fixed top-4 left-4 z-40 p-2 rounded-lg bg-white dark:bg-zinc-950 shadow-sm border border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:bg-zinc-900 transition-colors"
-            >
-                <span className="material-symbols-outlined">menu</span>
-            </button>
+    // Responsive Sidebar Content
+    const SidebarContent = ({ isDesktop = false }) => {
+        const collapsed = isDesktop ? isCollapsed : false;
 
-            {/* Backdrop */}
-            {isOpen && (
-                <div
-                    className="fixed inset-0 bg-slate-900/50 z-40 lg:hidden backdrop-blur-sm"
-                    onClick={() => setIsOpen(false)}
-                />
-            )}
-
-            <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'} flex-shrink-0 flex flex-col bg-white dark:bg-zinc-950 border-r border-slate-200 dark:border-zinc-800 h-full`}>
-                <div className="p-6 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                        <div className="size-10 rounded-full bg-primary flex items-center justify-center text-white">
-                            <span className="material-symbols-outlined">coffee_maker</span>
-                        </div>
-                        <div className="flex flex-col">
-                            <h1 className="text-slate-900 dark:text-white text-base font-bold leading-none">{storeName}</h1>
-                            <p className="text-slate-500 dark:text-zinc-400 text-xs mt-1">POS Dashboard</p>
-                        </div>
+        return (
+            <div className="flex h-full flex-col bg-card relative">
+                <div className={`flex h-16 items-center border-b border-border ${collapsed ? "justify-center px-0" : "px-6 gap-3"}`}>
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+                        <Coffee className="size-5" />
                     </div>
-                    <button onClick={() => setIsOpen(false)} className="lg:hidden text-slate-400 dark:text-zinc-400 hover:text-slate-600 dark:text-zinc-400">
-                        <span className="material-symbols-outlined">close</span>
-                    </button>
+                    {!collapsed && (
+                        <div className="flex flex-col min-w-0">
+                            <span className="text-base font-bold leading-tight truncate">{storeName || "Kaelcafe"}</span>
+                            <span className="text-xs text-muted-foreground font-medium truncate">POS Dashboard</span>
+                        </div>
+                    )}
                 </div>
-                <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
+
+                {isDesktop && (
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="absolute -right-4 top-5 z-50 rounded-full shadow-sm bg-background size-8 hidden lg:flex"
+                        onClick={toggleCollapse}
+                    >
+                        {collapsed ? <ChevronRight className="size-4" /> : <ChevronLeft className="size-4" />}
+                    </Button>
+                )}
+
+                <nav className={`flex-1 space-y-1.5 py-4 overflow-y-auto ${collapsed ? "px-3" : "px-4"}`}>
                     {navItems.map((item) => {
                         const isActive = pathname === item.path;
+                        const Icon = item.icon;
                         return (
                             <Link
                                 key={item.name}
                                 href={item.path}
-                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${isActive
-                                    ? "bg-primary text-white shadow-md shadow-primary/20"
-                                    : "text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:bg-zinc-800"
+                                title={collapsed ? item.name : undefined}
+                                className={`flex items-center rounded-xl py-2.5 transition-all ${collapsed ? "justify-center px-0" : "gap-3 px-3"
+                                    } ${isActive
+                                        ? "bg-primary text-primary-foreground shadow-md"
+                                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                     }`}
                             >
-                                <span className={`material-symbols-outlined text-[22px] ${isActive ? 'active-icon' : ''}`}>
-                                    {item.icon}
-                                </span>
-                                <span>{item.name}</span>
+                                <Icon className={`size-5 shrink-0 ${isActive ? "text-primary-foreground" : ""}`} />
+                                {!collapsed && <span className="text-sm font-medium">{item.name}</span>}
                             </Link>
                         );
                     })}
                 </nav>
 
-                {/* User Profile + Logout */}
-                <div className="p-4 border-t border-slate-200 dark:border-zinc-800">
+                <div className={`border-t border-border p-4 ${collapsed ? "flex flex-col items-center px-2" : ""}`}>
                     {user && (
-                        <div className="flex items-center gap-3 mb-3 px-2">
-                            <div className="size-9 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                                <span className="material-symbols-outlined text-xl">person</span>
+                        <div className={`mb-4 flex items-center ${collapsed ? "justify-center" : "gap-3 px-2"}`}>
+                            <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                <User className="size-5" />
                             </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user.name}</p>
-                                <p className="text-[10px] text-slate-500 dark:text-zinc-400 uppercase font-semibold tracking-wider">{user.role}</p>
-                            </div>
+                            {!collapsed && (
+                                <div className="flex min-w-0 flex-1 flex-col">
+                                    <span className="truncate text-sm font-bold">{user.name}</span>
+                                    <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                                        {user.role}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     )}
-                    <button
+                    <Button
+                        variant="outline"
+                        size={collapsed ? "icon" : "default"}
+                        className={`w-full justify-start bg-muted/50 hover:bg-destructive hover:text-destructive-foreground transition-all duration-200 ${collapsed ? "justify-center p-0" : "gap-2"
+                            }`}
                         onClick={handleLogout}
-                        className="w-full bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 font-semibold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all text-sm"
+                        title={collapsed ? "Logout" : undefined}
                     >
-                        <span className="material-symbols-outlined text-lg">logout</span>
-                        <span>Logout</span>
-                    </button>
+                        <LogOut className="size-4" />
+                        {!collapsed && <span>Logout</span>}
+                    </Button>
                 </div>
+            </div>
+        );
+    };
+
+    return (
+        <>
+            {/* Mobile Sidebar */}
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger
+                    className={buttonVariants({ variant: "outline", size: "icon", className: "fixed left-4 top-4 z-40 lg:hidden shadow-sm" })}
+                >
+                    <Menu className="size-5" />
+                    <span className="sr-only">Toggle Menu</span>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[280px] p-0 border-r-0">
+                    <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                    <SidebarContent isDesktop={false} />
+                </SheetContent>
+            </Sheet>
+
+            {/* Desktop Sidebar */}
+            <aside
+                className={`hidden lg:flex flex-col border-r border-border bg-card transition-all duration-300 ease-in-out ${isCollapsed ? "w-[80px]" : "w-[280px]"
+                    }`}
+            >
+                <SidebarContent isDesktop={true} />
             </aside>
         </>
     );

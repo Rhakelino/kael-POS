@@ -4,16 +4,38 @@ import { useState, useEffect, useCallback } from "react";
 import { getDashboardStats, getTopItems } from "@/actions/analytics";
 import { getOrders } from "@/actions/orders";
 import Link from "next/link";
+import {
+    Sun,
+    RefreshCw,
+    Bell,
+    Banknote,
+    ReceiptText,
+    Clock,
+    UtensilsCrossed,
+    Trophy
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 function formatRupiah(num) {
     return "Rp " + Number(num).toLocaleString("id-ID");
 }
 
-const STATUS_BADGE = {
-    new: "bg-blue-100 text-blue-700",
-    preparing: "bg-amber-100 text-amber-700",
-    ready: "bg-emerald-100 text-emerald-700",
-    completed: "bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400",
+const getStatusBadge = (status) => {
+    switch (status) {
+        case 'new':
+            return <Badge className="bg-blue-500 hover:bg-blue-600">New</Badge>;
+        case 'preparing':
+            return <Badge className="bg-amber-500 hover:bg-amber-600">Preparing</Badge>;
+        case 'ready':
+            return <Badge className="bg-emerald-500 hover:bg-emerald-600">Ready</Badge>;
+        case 'completed':
+            return <Badge variant="outline" className="text-muted-foreground">Completed</Badge>;
+        default:
+            return <Badge variant="outline">{status}</Badge>;
+    }
 };
 
 export default function Dashboard() {
@@ -49,34 +71,25 @@ export default function Dashboard() {
     return (
         <main className="flex-1 flex flex-col overflow-y-auto">
             {/* Header */}
-            <header className="h-16 flex items-center justify-between px-4 pl-14 lg:px-8 bg-white dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800 sticky top-0 z-10">
+            <header className="h-16 flex items-center justify-between px-4 pl-14 lg:px-8 bg-card border-b border-border sticky top-0 z-10">
                 <div className="flex items-center gap-2 lg:gap-4">
-                    <div className="hidden sm:flex items-center gap-2 bg-slate-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full border border-slate-200 dark:border-zinc-800">
-                        <span className="material-symbols-outlined text-primary text-sm">
-                            wb_sunny
-                        </span>
-                        <span className="text-sm font-semibold text-slate-700 dark:text-zinc-200">
+                    <div className="hidden sm:flex items-center gap-2 bg-muted px-3 py-1.5 rounded-full border border-border">
+                        <Sun className="size-4 text-primary" />
+                        <span className="text-sm font-semibold text-foreground">
                             Active Shift
                         </span>
                     </div>
-                    <div className="text-sm text-slate-500 dark:text-zinc-400 font-medium">
+                    <div className="text-sm text-muted-foreground font-medium">
                         {today}
                     </div>
                 </div>
                 <div className="flex items-center gap-2 lg:gap-4">
-                    <button
-                        onClick={loadData}
-                        className="p-2 rounded-xl text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:bg-zinc-800 transition-colors"
-                    >
-                        <span className="material-symbols-outlined">
-                            refresh
-                        </span>
-                    </button>
-                    <button className="p-2 rounded-xl text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:bg-zinc-800 transition-colors relative">
-                        <span className="material-symbols-outlined">
-                            notifications
-                        </span>
-                    </button>
+                    <Button variant="ghost" size="icon" onClick={loadData}>
+                        <RefreshCw className="size-4 text-muted-foreground" />
+                    </Button>
+                    <Button variant="ghost" size="icon">
+                        <Bell className="size-4 text-muted-foreground" />
+                    </Button>
                 </div>
             </header>
 
@@ -85,10 +98,10 @@ export default function Dashboard() {
                 {/* Hero */}
                 <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                     <div>
-                        <h2 className="text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                        <h2 className="text-2xl lg:text-3xl font-black text-foreground tracking-tight">
                             Dashboard Overview
                         </h2>
-                        <p className="text-slate-500 dark:text-zinc-400 mt-1 text-sm lg:text-base">
+                        <p className="text-muted-foreground mt-1 text-sm lg:text-base">
                             Track your cafe&apos;s live performance.
                         </p>
                     </div>
@@ -101,213 +114,166 @@ export default function Dashboard() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                        <div className="bg-white dark:bg-zinc-950 p-5 lg:p-6 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-sm">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                                    <span className="material-symbols-outlined">
-                                        payments
-                                    </span>
+                        <Card>
+                            <CardContent className="p-5 lg:p-6">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                                        <Banknote className="size-5" />
+                                    </div>
                                 </div>
-                            </div>
-                            <p className="text-slate-500 dark:text-zinc-400 text-sm font-medium">
-                                Total Sales
-                            </p>
-                            <p className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white mt-1">
-                                {formatRupiah(stats?.totalRevenue || 0)}
-                            </p>
-                        </div>
-                        <div className="bg-white dark:bg-zinc-950 p-5 lg:p-6 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-sm">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
-                                    <span className="material-symbols-outlined">
-                                        receipt_long
-                                    </span>
+                                <p className="text-muted-foreground text-sm font-medium">
+                                    Total Sales
+                                </p>
+                                <p className="text-xl lg:text-2xl font-black text-foreground mt-1">
+                                    {formatRupiah(stats?.totalRevenue || 0)}
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardContent className="p-5 lg:p-6">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500">
+                                        <ReceiptText className="size-5" />
+                                    </div>
                                 </div>
-                            </div>
-                            <p className="text-slate-500 dark:text-zinc-400 text-sm font-medium">
-                                Completed Orders
-                            </p>
-                            <p className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white mt-1">
-                                {stats?.orderCount || 0}
-                            </p>
-                        </div>
-                        <div className="bg-white dark:bg-zinc-950 p-5 lg:p-6 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-sm">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="p-2 bg-amber-100 rounded-lg text-amber-600">
-                                    <span className="material-symbols-outlined">
-                                        pending_actions
-                                    </span>
+                                <p className="text-muted-foreground text-sm font-medium">
+                                    Completed Orders
+                                </p>
+                                <p className="text-xl lg:text-2xl font-black text-foreground mt-1">
+                                    {stats?.orderCount || 0}
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardContent className="p-5 lg:p-6">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="p-2 bg-amber-500/10 rounded-lg text-amber-500">
+                                        <Clock className="size-5" />
+                                    </div>
                                 </div>
-                            </div>
-                            <p className="text-slate-500 dark:text-zinc-400 text-sm font-medium">
-                                Pending Orders
-                            </p>
-                            <p className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white mt-1">
-                                {stats?.pendingOrders || 0}
-                            </p>
-                        </div>
-                        <div className="bg-white dark:bg-zinc-950 p-5 lg:p-6 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-sm">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="p-2 bg-emerald-100 rounded-lg text-emerald-600">
-                                    <span className="material-symbols-outlined">
-                                        restaurant_menu
-                                    </span>
+                                <p className="text-muted-foreground text-sm font-medium">
+                                    Pending Orders
+                                </p>
+                                <p className="text-xl lg:text-2xl font-black text-foreground mt-1">
+                                    {stats?.pendingOrders || 0}
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardContent className="p-5 lg:p-6">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-500">
+                                        <UtensilsCrossed className="size-5" />
+                                    </div>
                                 </div>
-                            </div>
-                            <p className="text-slate-500 dark:text-zinc-400 text-sm font-medium">
-                                Active Products
-                            </p>
-                            <p className="text-xl lg:text-2xl font-black text-slate-900 dark:text-white mt-1">
-                                {stats?.activeProducts || 0}
-                            </p>
-                        </div>
+                                <p className="text-muted-foreground text-sm font-medium">
+                                    Active Products
+                                </p>
+                                <p className="text-xl lg:text-2xl font-black text-foreground mt-1">
+                                    {stats?.activeProducts || 0}
+                                </p>
+                            </CardContent>
+                        </Card>
                     </div>
                 )}
 
                 {/* Main Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
                     {/* Recent Orders Table */}
-                    <div className="lg:col-span-2 bg-white dark:bg-zinc-950 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden">
-                        <div className="p-4 lg:p-6 border-b border-slate-200 dark:border-zinc-800 flex items-center justify-between">
-                            <h3 className="text-base lg:text-lg font-bold">
-                                Recent Orders
-                            </h3>
-                            <Link
-                                href="/orders"
-                                className="text-sm text-primary font-bold hover:underline"
-                            >
+                    <Card className="lg:col-span-2 shadow-sm overflow-hidden flex flex-col">
+                        <CardHeader className="flex flex-row items-center justify-between py-4 lg:py-6 border-b border-border bg-card">
+                            <CardTitle className="text-base lg:text-lg font-bold">Recent Orders</CardTitle>
+                            <Link href="/orders" className="text-sm text-primary font-bold hover:underline">
                                 View All
                             </Link>
-                        </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left whitespace-nowrap">
-                                <thead>
-                                    <tr className="bg-slate-50 dark:bg-zinc-900 text-slate-500 dark:text-zinc-400 text-xs font-bold uppercase tracking-wider">
-                                        <th className="px-4 lg:px-6 py-4">
-                                            Order ID
-                                        </th>
-                                        <th className="px-4 lg:px-6 py-4">
-                                            Items
-                                        </th>
-                                        <th className="px-4 lg:px-6 py-4">
-                                            Status
-                                        </th>
-                                        <th className="px-4 lg:px-6 py-4">
-                                            Time
-                                        </th>
-                                        <th className="px-4 lg:px-6 py-4">
-                                            Total
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-100">
+                        </CardHeader>
+                        <CardContent className="p-0 overflow-x-auto">
+                            <Table>
+                                <TableHeader className="bg-muted/50">
+                                    <TableRow>
+                                        <TableHead className="font-bold">Order ID</TableHead>
+                                        <TableHead className="font-bold">Items</TableHead>
+                                        <TableHead className="font-bold">Status</TableHead>
+                                        <TableHead className="font-bold">Time</TableHead>
+                                        <TableHead className="font-bold text-right">Total</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
                                     {recentOrders.length === 0 ? (
-                                        <tr>
-                                            <td
-                                                colSpan={5}
-                                                className="px-6 py-8 text-center text-slate-400 dark:text-zinc-400 text-sm"
-                                            >
-                                                No orders yet. Go to Cashier to
-                                                create one!
-                                            </td>
-                                        </tr>
+                                        <TableRow>
+                                            <TableCell colSpan={5} className="h-24 text-center">
+                                                No orders yet. Go to Cashier to create one!
+                                            </TableCell>
+                                        </TableRow>
                                     ) : (
                                         recentOrders.map((order) => (
-                                            <tr
-                                                key={order.id}
-                                                className="hover:bg-slate-50 dark:bg-zinc-900 transition-colors"
-                                            >
-                                                <td className="px-6 py-4 text-sm font-bold text-slate-900 dark:text-white">
+                                            <TableRow key={order.id} className="cursor-pointer transition-colors">
+                                                <TableCell className="font-bold">
                                                     #{order.orderNumber}
-                                                </td>
-                                                <td className="px-6 py-4 text-sm text-slate-600 dark:text-zinc-400">
+                                                </TableCell>
+                                                <TableCell className="text-muted-foreground">
                                                     {order.items
                                                         ?.slice(0, 2)
-                                                        .map(
-                                                            (i) =>
-                                                                `${i.quantity}× ${i.productName}`
-                                                        )
+                                                        .map((i) => `${i.quantity}× ${i.productName}`)
                                                         .join(", ")}
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <span
-                                                        className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${STATUS_BADGE[
-                                                            order.status
-                                                            ] ||
-                                                            STATUS_BADGE.completed
-                                                            }`}
-                                                    >
-                                                        {order.status}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 text-sm text-slate-500 dark:text-zinc-400">
-                                                    {new Date(
-                                                        order.createdAt
-                                                    ).toLocaleTimeString(
-                                                        "en-US",
-                                                        {
-                                                            hour: "numeric",
-                                                            minute: "2-digit",
-                                                            hour12: true,
-                                                        }
-                                                    )}
-                                                </td>
-                                                <td className="px-6 py-4 text-sm font-bold">
+                                                </TableCell>
+                                                <TableCell>
+                                                    {getStatusBadge(order.status)}
+                                                </TableCell>
+                                                <TableCell className="text-muted-foreground">
+                                                    {new Date(order.createdAt).toLocaleTimeString("en-US", {
+                                                        hour: "numeric",
+                                                        minute: "2-digit",
+                                                        hour12: true,
+                                                    })}
+                                                </TableCell>
+                                                <TableCell className="font-bold text-right">
                                                     {formatRupiah(order.total)}
-                                                </td>
-                                            </tr>
+                                                </TableCell>
+                                            </TableRow>
                                         ))
                                     )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
 
                     {/* Popular Items */}
-                    <div className="bg-white dark:bg-zinc-950 p-6 rounded-xl border border-slate-200 dark:border-zinc-800 shadow-sm">
-                        <h3 className="text-lg font-bold mb-6">
-                            Top Selling Items
-                        </h3>
-                        <div className="space-y-4">
-                            {topItems.length === 0 ? (
-                                <p className="text-sm text-slate-400 dark:text-zinc-400 text-center py-8">
-                                    No sales data yet
-                                </p>
-                            ) : (
-                                topItems.map((item, i) => (
-                                    <div
-                                        key={i}
-                                        className="flex items-center gap-4"
-                                    >
-                                        <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black text-sm shrink-0">
-                                            #{i + 1}
+                    <Card className="shadow-sm flex flex-col">
+                        <CardHeader className="py-4 lg:py-6 bg-card">
+                            <CardTitle className="flex items-center gap-2 text-lg">
+                                <Trophy className="size-5 text-amber-500" />
+                                Top Selling Items
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex-1 flex flex-col justify-between">
+                            <div className="space-y-4">
+                                {topItems.length === 0 ? (
+                                    <p className="text-sm text-muted-foreground text-center py-8">
+                                        No sales data yet
+                                    </p>
+                                ) : (
+                                    topItems.map((item, i) => (
+                                        <div key={i} className="flex items-center gap-4">
+                                            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary font-black text-sm">
+                                                #{i + 1}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-bold truncate">{item.productName}</p>
+                                                <p className="text-xs text-muted-foreground">{item.totalQuantity} sold</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-sm font-bold">{formatRupiah(item.totalRevenue)}</p>
+                                            </div>
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-bold truncate">
-                                                {item.productName}
-                                            </p>
-                                            <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                                {item.totalQuantity} sold
-                                            </p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-sm font-bold">
-                                                {formatRupiah(
-                                                    item.totalRevenue
-                                                )}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                        <Link
-                            href="/menu"
-                            className="block w-full mt-6 py-2 border border-slate-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-slate-500 dark:text-zinc-400 hover:bg-slate-50 dark:bg-zinc-900 transition-colors text-center"
-                        >
-                            View Menu
-                        </Link>
-                    </div>
+                                    ))
+                                )}
+                            </div>
+                            <Link href="/menu" className={buttonVariants({ variant: "outline", className: "w-full mt-6" })}>
+                                View Menu
+                            </Link>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         </main>

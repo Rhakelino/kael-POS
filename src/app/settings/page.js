@@ -3,6 +3,26 @@
 import { useState, useEffect } from "react";
 import { useSettings } from "@/components/SettingsProvider";
 
+import {
+    Bell,
+    Moon,
+    Sun,
+    Printer,
+    CheckCircle2,
+    Circle,
+    Plus,
+    Save,
+    RotateCcw
+} from "lucide-react";
+
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
+
 export default function Settings() {
     const {
         storeName: ctxStoreName,
@@ -48,7 +68,9 @@ export default function Settings() {
             paymentMethods,
             theme
         });
-        alert("System configuration saved successfully!");
+        toast.success("Settings saved", {
+            description: "System configuration saved successfully!"
+        });
     };
 
     const handleDiscard = () => {
@@ -60,6 +82,9 @@ export default function Settings() {
         setTaxRates(ctxTaxRates);
         setPaymentMethods(ctxPaymentMethods);
         setTheme(ctxTheme);
+        toast.info("Changes discarded", {
+            description: "Reverted to previous settings."
+        });
     };
 
     const togglePaymentMethod = (id) => {
@@ -75,184 +100,211 @@ export default function Settings() {
     };
 
     return (
-        <main className="flex-1 flex flex-col overflow-y-auto">
-            <header className="flex items-center justify-between border-b border-primary/10 dark:border-zinc-800 px-4 pl-14 lg:px-8 py-4 bg-white dark:bg-zinc-950/50 backdrop-blur-md sticky top-0 z-10">
+        <main className="flex-1 flex flex-col overflow-y-auto bg-background">
+            <header className="flex items-center justify-between border-b border-border px-4 pl-14 lg:px-8 py-4 bg-card/50 backdrop-blur-md sticky top-0 z-10">
                 <div className="flex items-center gap-4">
-                    <h2 className="text-slate-900 dark:text-white text-xl font-bold tracking-tight">System Configuration</h2>
+                    <h2 className="text-foreground text-xl lg:text-2xl font-bold tracking-tight">System Settings</h2>
                 </div>
-                <div className="flex gap-3">
-                    <button className="flex items-center justify-center rounded-xl h-10 w-10 bg-white dark:bg-zinc-950 border border-primary/10 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 ">
-                        <span className="material-symbols-outlined">notifications</span>
-                    </button>
-                    <button onClick={handleSave} className="flex items-center justify-center rounded-xl h-10 px-4 bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-all">
+                <div className="flex gap-2 sm:gap-3">
+                    <Button variant="outline" size="icon" className="rounded-xl size-10 bg-card border-border text-muted-foreground">
+                        <Bell className="size-4" />
+                    </Button>
+                    <Button onClick={handleSave} className="rounded-xl px-4 font-bold shadow-md shadow-primary/20">
+                        <Save className="size-4 mr-2 hidden sm:block" />
                         Save Changes
-                    </button>
+                    </Button>
                 </div>
             </header>
-            <div className="p-4 lg:p-8 max-w-4xl mx-auto w-full space-y-8 lg:space-y-10">
+
+            <div className="p-4 lg:p-8 max-w-4xl mx-auto w-full space-y-8">
                 {/* Store Profile Section */}
-                <section>
-                    <div className="mb-4">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white ">Store Profile</h3>
-                        <p className="text-sm text-slate-500 dark:text-zinc-400 ">Basic information about your cafe location.</p>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white dark:bg-zinc-950 p-6 rounded-xl border border-primary/10 dark:border-zinc-800 shadow-sm">
+                <Card className="border-border shadow-sm bg-card">
+                    <CardHeader>
+                        <CardTitle>Store Profile</CardTitle>
+                        <CardDescription>Basic information about your cafe location.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700 dark:text-zinc-200 ">Store Name</label>
-                            <input
-                                className="w-full rounded-lg border-primary/20 bg-background-light dark:bg-background-dark focus:border-primary focus:ring-primary/20 p-3 text-sm"
-                                type="text"
+                            <Label htmlFor="storeName">Store Name</Label>
+                            <Input
+                                id="storeName"
                                 value={storeName}
                                 onChange={(e) => setStoreName(e.target.value)}
+                                className="bg-muted/50"
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700 dark:text-zinc-200 ">Contact Number</label>
-                            <input
-                                className="w-full rounded-lg border-primary/20 bg-background-light dark:bg-background-dark focus:border-primary focus:ring-primary/20 p-3 text-sm"
-                                type="text"
+                            <Label htmlFor="contactNumber">Contact Number</Label>
+                            <Input
+                                id="contactNumber"
                                 value={contactNumber}
                                 onChange={(e) => setContactNumber(e.target.value)}
+                                className="bg-muted/50"
                             />
                         </div>
                         <div className="space-y-2 md:col-span-2">
-                            <label className="text-sm font-semibold text-slate-700 dark:text-zinc-200 ">Address</label>
-                            <input
-                                className="w-full rounded-lg border-primary/20 bg-background-light dark:bg-background-dark focus:border-primary focus:ring-primary/20 p-3 text-sm"
-                                type="text"
+                            <Label htmlFor="address">Address</Label>
+                            <Input
+                                id="address"
                                 value={address}
                                 onChange={(e) => setAddress(e.target.value)}
+                                className="bg-muted/50"
                             />
                         </div>
-                    </div>
-                </section>
+                    </CardContent>
+                </Card>
+
                 {/* Appearance Section */}
-                <section>
-                    <div className="mb-4">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white ">Appearance</h3>
-                        <p className="text-sm text-slate-500 dark:text-zinc-400 ">Customize the look and feel of your POS.</p>
-                    </div>
-                    <div className="bg-white dark:bg-zinc-950 p-6 rounded-xl border border-primary/10 dark:border-zinc-800 shadow-sm space-y-4">
-                        <div className="flex items-center justify-between p-3 bg-background-light dark:bg-background-dark rounded-lg cursor-pointer" onClick={() => {
-                            const newTheme = theme === 'dark' ? 'light' : 'dark';
-                            setTheme(newTheme);
-                            saveSettings({
-                                storeName,
-                                contactNumber,
-                                address,
-                                autoPrint,
-                                receiptFooter,
-                                taxRates,
-                                paymentMethods,
-                                theme: newTheme
-                            });
-                        }}>
-                            <div className="flex items-center gap-3">
-                                <span className="material-symbols-outlined text-primary">{theme === 'dark' ? 'dark_mode' : 'light_mode'}</span>
+                <Card className="border-border shadow-sm bg-card">
+                    <CardHeader>
+                        <CardTitle>Appearance</CardTitle>
+                        <CardDescription>Customize the look and feel of your POS.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div
+                            className="flex items-center justify-between p-4 bg-muted/50 rounded-xl cursor-pointer hover:bg-muted/80 transition-colors border border-border"
+                            onClick={() => {
+                                const newTheme = theme === 'dark' ? 'light' : 'dark';
+                                setTheme(newTheme);
+                                saveSettings({
+                                    storeName,
+                                    contactNumber,
+                                    address,
+                                    autoPrint,
+                                    receiptFooter,
+                                    taxRates,
+                                    paymentMethods,
+                                    theme: newTheme
+                                });
+                            }}
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="p-2 bg-background rounded-lg border border-border text-primary shadow-sm">
+                                    {theme === 'dark' ? <Moon className="size-5" /> : <Sun className="size-5" />}
+                                </div>
                                 <div>
-                                    <p className="text-sm font-semibold">Dark Mode</p>
-                                    <p className="text-xs text-slate-500 dark:text-zinc-400">Toggle dark theme across the application</p>
+                                    <p className="text-sm font-bold text-foreground">Dark Mode</p>
+                                    <p className="text-xs text-muted-foreground mt-0.5">Toggle dark theme across the application</p>
                                 </div>
                             </div>
-                            <button
-                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${theme === 'dark' ? 'bg-primary' : 'bg-slate-300'}`}
-                            >
-                                <span className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-zinc-950 transition-transform ${theme === 'dark' ? 'translate-x-6' : 'translate-x-1'}`}></span>
-                            </button>
+                            <Switch checked={theme === 'dark'} />
                         </div>
-                    </div>
-                </section>
+                    </CardContent>
+                </Card>
+
                 {/* Receipt Printing Section */}
-                <section>
-                    <div className="mb-4">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white ">Receipt Printing</h3>
-                        <p className="text-sm text-slate-500 dark:text-zinc-400 ">Configure how receipts are printed and displayed.</p>
-                    </div>
-                    <div className="bg-white dark:bg-zinc-950 p-6 rounded-xl border border-primary/10 dark:border-zinc-800 shadow-sm space-y-4">
-                        <div className="flex items-center justify-between p-3 bg-background-light dark:bg-background-dark rounded-lg">
-                            <div className="flex items-center gap-3">
-                                <span className="material-symbols-outlined text-primary">print</span>
+                <Card className="border-border shadow-sm bg-card">
+                    <CardHeader>
+                        <CardTitle>Receipt Printing</CardTitle>
+                        <CardDescription>Configure how receipts are printed and displayed.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div
+                            className="flex items-center justify-between p-4 bg-muted/50 rounded-xl cursor-pointer hover:bg-muted/80 transition-colors border border-border"
+                            onClick={() => setAutoPrint(!autoPrint)}
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="p-2 bg-background rounded-lg border border-border text-primary shadow-sm">
+                                    <Printer className="size-5" />
+                                </div>
                                 <div>
-                                    <p className="text-sm font-semibold">Auto-print receipts</p>
-                                    <p className="text-xs text-slate-500 dark:text-zinc-400">Print receipt automatically after payment</p>
+                                    <p className="text-sm font-bold text-foreground">Auto-print receipts</p>
+                                    <p className="text-xs text-muted-foreground mt-0.5">Print receipt automatically after payment</p>
                                 </div>
                             </div>
-                            <button
-                                onClick={() => setAutoPrint(!autoPrint)}
-                                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${autoPrint ? 'bg-primary' : 'bg-slate-300'}`}
-                            >
-                                <span className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-zinc-950 transition-transform ${autoPrint ? 'translate-x-6' : 'translate-x-1'}`}></span>
-                            </button>
+                            <Switch checked={autoPrint} onCheckedChange={setAutoPrint} />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700 dark:text-zinc-200 ">Receipt Footer Text</label>
-                            <textarea
-                                className="w-full rounded-lg border-primary/20 bg-background-light dark:bg-background-dark focus:border-primary focus:ring-primary/20 p-3 text-sm h-24"
+                        <div className="space-y-2 pt-2">
+                            <Label htmlFor="receiptFooter">Receipt Footer Text</Label>
+                            <Textarea
+                                id="receiptFooter"
                                 value={receiptFooter}
                                 onChange={(e) => setReceiptFooter(e.target.value)}
+                                className="h-24 bg-muted/50 resize-y"
+                                placeholder="Thank you for visiting!"
                             />
                         </div>
-                    </div>
-                </section>
+                    </CardContent>
+                </Card>
+
                 {/* Tax Rates & Payment Methods Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* Tax Rates */}
-                    <section>
-                        <div className="mb-4">
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-white ">Tax Rates (%)</h3>
-                            <p className="text-sm text-slate-500 dark:text-zinc-400 ">Manage sales tax for different items.</p>
-                        </div>
-                        <div className="bg-white dark:bg-zinc-950 p-6 rounded-xl border border-primary/10 dark:border-zinc-800 shadow-sm space-y-4">
+                    <Card className="border-border shadow-sm bg-card">
+                        <CardHeader>
+                            <CardTitle>Tax Rates (%)</CardTitle>
+                            <CardDescription>Manage sales tax for different items.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
                             {taxRates.map(tr => (
-                                <div key={tr.id} className="flex items-center justify-between gap-4">
-                                    <span className="text-sm font-medium">{tr.name}</span>
+                                <div key={tr.id} className="flex items-center justify-between gap-4 p-3 bg-muted/30 rounded-xl border border-border">
+                                    <span className="text-sm font-bold text-foreground px-2">{tr.name}</span>
                                     <div className="flex items-center gap-2">
-                                        <input
-                                            className="w-20 rounded-lg border-primary/20 bg-background-light dark:bg-background-dark py-2 px-3 text-sm text-right focus:border-primary focus:ring-primary/20"
+                                        <Input
                                             type="number"
                                             value={tr.rate}
                                             onChange={(e) => updateTaxRate(tr.id, e.target.value)}
+                                            className="w-24 text-right font-mono bg-background focus-visible:ring-primary h-9"
                                         />
-                                        <span className="text-slate-500 dark:text-zinc-400">%</span>
+                                        <span className="text-muted-foreground font-bold">%</span>
                                     </div>
                                 </div>
                             ))}
-                            <button className="w-full py-2 border-2 border-dashed border-primary/20 rounded-lg text-primary text-sm font-semibold hover:bg-primary/5 transition-colors">
-                                + Add Tax Category
-                            </button>
-                        </div>
-                    </section>
+                            <Button variant="outline" className="w-full border-dashed border-2 text-primary hover:text-primary hover:bg-primary/5 bg-transparent h-11 rounded-xl">
+                                <Plus className="size-4 mr-2" />
+                                Add Tax Category
+                            </Button>
+                        </CardContent>
+                    </Card>
+
                     {/* Payment Methods */}
-                    <section>
-                        <div className="mb-4">
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-white ">Payment Methods</h3>
-                            <p className="text-sm text-slate-500 dark:text-zinc-400 ">Accepted ways to pay.</p>
-                        </div>
-                        <div className="bg-white dark:bg-zinc-950 p-6 rounded-xl border border-primary/10 dark:border-zinc-800 shadow-sm space-y-3">
+                    <Card className="border-border shadow-sm bg-card">
+                        <CardHeader>
+                            <CardTitle>Payment Methods</CardTitle>
+                            <CardDescription>Accepted ways to pay.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
                             {paymentMethods.map(pm => (
-                                <div key={pm.id} onClick={() => togglePaymentMethod(pm.id)} className={`cursor-pointer flex items-center justify-between p-2 rounded-lg border transition-colors ${pm.active ? 'border-primary/10 dark:border-zinc-800 bg-primary/5' : 'border-slate-200 dark:border-zinc-800 hover:bg-slate-50 dark:bg-zinc-900'}`}>
-                                    <div className="flex items-center gap-2">
-                                        <span className={`material-symbols-outlined text-sm ${pm.active ? 'text-primary' : 'text-slate-400 dark:text-zinc-400'}`}>{pm.icon}</span>
-                                        <span className={`text-sm font-medium ${pm.active ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-zinc-400'}`}>{pm.name}</span>
+                                <div
+                                    key={pm.id}
+                                    onClick={() => togglePaymentMethod(pm.id)}
+                                    className={`cursor-pointer flex items-center justify-between p-3.5 rounded-xl border transition-all ${pm.active
+                                            ? 'border-primary/50 bg-primary/5 shadow-sm shadow-primary/5'
+                                            : 'border-border hover:bg-muted/50 hover:border-border/80'
+                                        }`}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className={`text-sm ${pm.active ? 'text-primary' : 'text-muted-foreground'}`}>{pm.icon}</span>
+                                        <span className={`text-sm font-bold ${pm.active ? 'text-foreground' : 'text-muted-foreground'}`}>{pm.name}</span>
                                     </div>
                                     {pm.active ? (
-                                        <span className="material-symbols-outlined text-primary text-xl">check_circle</span>
+                                        <CheckCircle2 className="size-5 text-primary" />
                                     ) : (
-                                        <span className="material-symbols-outlined text-slate-300 text-xl">radio_button_unchecked</span>
+                                        <Circle className="size-5 text-muted-foreground" />
                                     )}
                                 </div>
                             ))}
-                        </div>
-                    </section>
+                        </CardContent>
+                    </Card>
                 </div>
-                <div className="flex justify-end pt-6 border-t border-primary/10 dark:border-zinc-800">
-                    <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
-                        <button onClick={handleDiscard} className="w-full sm:w-auto px-6 py-2.5 rounded-xl border border-primary/30 text-primary font-semibold text-sm hover:bg-primary/5 transition-all">
+
+                <div className="flex justify-end pt-4 pb-8">
+                    <div className="flex flex-col-reverse sm:flex-row gap-3 w-full sm:w-auto">
+                        <Button
+                            variant="outline"
+                            onClick={handleDiscard}
+                            className="w-full sm:w-auto px-6 h-12 rounded-xl border-border font-bold bg-background text-foreground"
+                        >
+                            <RotateCcw className="size-4 mr-2 text-muted-foreground" />
                             Discard Changes
-                        </button>
-                        <button onClick={handleSave} className="w-full sm:w-auto px-8 py-2.5 rounded-xl bg-primary text-white font-bold text-sm shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
-                            Save System Configuration
-                        </button>
+                        </Button>
+                        <Button
+                            onClick={handleSave}
+                            className="w-full sm:w-auto px-8 h-12 rounded-xl font-bold shadow-lg shadow-primary/20"
+                        >
+                            <Save className="size-4 mr-2" />
+                            Save Configuration
+                        </Button>
                     </div>
                 </div>
             </div>

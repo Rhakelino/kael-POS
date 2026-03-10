@@ -119,6 +119,8 @@ export const orders = sqliteTable("orders", {
     discount: real("discount").notNull().default(0),
     total: real("total").notNull().default(0),
     paymentMethod: text("payment_method").notNull().default("cash"), // 'cash' | 'card' | 'qris'
+    amountPaid: real("amount_paid"), // Amount paid by customer (for cash payments)
+    changeAmount: real("change_amount"), // Change to return to customer
     status: text("status").notNull().default("new"), // 'new' | 'preparing' | 'ready' | 'completed'
     cashierId: text("cashier_id").references(() => users.id),
     notes: text("notes"),
