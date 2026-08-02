@@ -26,7 +26,14 @@ export async function POST(request) {
         const buffer = await file.arrayBuffer();
         const bytes = new Uint8Array(buffer);
 
-        const bucket = process.env.POS_BUCKET;
+        let bucket = null;
+        try {
+            const { getRequestContext } = require("@cloudflare/next-on-pages");
+            const ctx = getRequestContext();
+            bucket = ctx?.env?.POS_BUCKET;
+        } catch (e) {
+            // fallback
+        }
 
         if (!bucket) {
             console.warn("POS_BUCKET not bound. Simulated upload success.");

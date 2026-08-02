@@ -2,12 +2,18 @@ import { drizzle as drizzleD1 } from "drizzle-orm/d1";
 import * as schema from "../db/schema.js";
 
 export function getDb() {
-    if (process.env.DB) {
-        return drizzleD1(process.env.DB, { schema });
+    try {
+        const { getRequestContext } = require("@cloudflare/next-on-pages");
+        const ctx = getRequestContext();
+        if (ctx?.env?.DB) {
+            return drizzleD1(ctx.env.DB, { schema });
+        }
+    } catch (e) {
+        // Fallback if getRequestContext is missing
     }
     
     return new Proxy({}, {
-        get: () => () => { throw new Error("Database not bound. process.env.DB is missing."); }
+        get: () => () => { throw new Error("Database not bound. DB binding is missing in Cloudflare."); }
     });
 }
 
