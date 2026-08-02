@@ -1,16 +1,15 @@
 import { drizzle as drizzleD1 } from "drizzle-orm/d1";
 import * as schema from "../db/schema.js";
-import { getRequestContext } from "@cloudflare/next-on-pages";
 
 export function getDb() {
+    // OpenNext expose binding ke process.env secara otomatis di cloud
     if (process.env.NODE_ENV === "production" || process.env.NEXT_RUNTIME === "edge") {
-        const ctx = getRequestContext();
-        if (ctx?.env?.DB) {
-            return drizzleD1(ctx.env.DB, { schema });
+        if (process.env.DB) {
+            return drizzleD1(process.env.DB, { schema });
         }
     }
     
-    // Serverless/Node fallback (untuk Drizzle Kit Studio / Push lokal)
+    // Serverless/Node fallback (untuk local development dengan `npm run dev`)
     const Database = require("better-sqlite3");
     const { drizzle: drizzleBetter } = require("drizzle-orm/better-sqlite3");
     const path = require("path");
