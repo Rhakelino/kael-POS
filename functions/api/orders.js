@@ -34,27 +34,24 @@ export async function onRequestPost(context) {
         
         const changeAmount = body.amountPaid ? body.amountPaid - subtotal : null;
         
-        // D1 Batched execution
-        const stmts = [
-            db.insert(orders).values({
-                id: orderId,
-                orderNumber,
-                subtotal,
-                tax: 0,
-                discount: 0,
-                total: subtotal,
-                paymentMethod: body.paymentMethod,
-                amountPaid: body.amountPaid,
-                changeAmount,
-                status: "new",
-                cashierId: body.cashierId,
-                createdAt: now,
-                updatedAt: now,
-            })
-        ];
+        await db.insert(orders).values({
+            id: orderId,
+            orderNumber,
+            subtotal,
+            tax: 0,
+            discount: 0,
+            total: subtotal,
+            paymentMethod: body.paymentMethod,
+            amountPaid: body.amountPaid || null,
+            changeAmount,
+            status: "new",
+            cashierId: body.cashierId || null,
+            createdAt: now,
+            updatedAt: now,
+        });
         
         for (const item of body.items) {
-            stmts.push(db.insert(orderItems).values({
+            await db.insert(orderItems).values({
                 id: crypto.randomUUID(),
                 orderId,
                 productId: item.productId,
@@ -62,10 +59,8 @@ export async function onRequestPost(context) {
                 quantity: item.quantity,
                 unitPrice: item.price,
                 subtotal: item.price * item.quantity,
-            }));
+            });
         }
-        
-        await db.batch(stmts);
         
         return Response.json({ success: true, orderId, orderNumber, total: subtotal, amountPaid: body.amountPaid, changeAmount });
     } catch (e) {

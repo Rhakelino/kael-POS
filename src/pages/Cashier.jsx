@@ -173,8 +173,12 @@ export default function Cashier() {
                 setShowReceipt({ orderNumber: result.orderNumber, items: cart, total: result.total, paymentMethod, amountPaid: result.amountPaid, changeAmount: result.changeAmount, date: new Date() });
                 resetCart();
                 setCartOpen(false);
+            } else {
+                alert("Gagal dari server: " + result.error);
             }
-        } catch(e) { }
+        } catch(e) {
+            alert("Gagal koneksi ke server: " + e.message);
+        }
         setIsSubmitting(false);
     };
 
