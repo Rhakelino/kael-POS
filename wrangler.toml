@@ -1,0 +1,13 @@
+name = "pos-kaelcafe"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "kael-cafe-db"
+database_id = "local-d1-dev" # Local mock ID, akan diganti pas deploy asli
+
+[[r2_buckets]]
+binding = "POS_BUCKET"
+bucket_name = "kael-pos-assets"

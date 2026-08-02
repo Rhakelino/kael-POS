@@ -1,4 +1,5 @@
 "use server";
+export const runtime = 'edge';
 
 import { db } from "@/lib/db";
 import { users } from "@/db/schema";

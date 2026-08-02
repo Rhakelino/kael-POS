@@ -5,7 +5,6 @@ import { loginWithEmailPin } from "@/actions/auth";
 import { useRouter } from "next/navigation";
 
 import { Coffee, AlertCircle, Mail, KeyRound, LogIn, Loader2 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -27,10 +26,7 @@ export default function LoginPage() {
 
         if (result.success) {
             router.push("/");
-            // Minimal delay to allow cookie to register
-            setTimeout(() => {
-                router.refresh();
-            }, 100);
+            setTimeout(() => router.refresh(), 100);
         } else {
             setError(result.error);
             setIsLoading(false);
@@ -38,99 +34,84 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
-            {/* Background decoration */}
-            <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden">
-                <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px]" />
-                <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-amber-500/10 rounded-full blur-[100px]" />
+        <div className="min-h-[100dvh] flex items-center justify-center bg-background p-4 relative overflow-hidden">
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px]" />
+                <div className="absolute bottom-[-20%] left-[-10%] w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px]" />
             </div>
 
-            <div className="w-full max-w-md relative z-10 flex flex-col items-center">
-                {/* Logo Section */}
+            <div className="w-full max-w-sm relative z-10">
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-primary text-primary-foreground shadow-xl shadow-primary/20 mb-6 group hover:scale-105 transition-transform">
-                        <Coffee className="size-10 group-hover:rotate-12 transition-transform" />
+                    <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-primary text-primary-foreground shadow-xl shadow-primary/20 mb-5">
+                        <Coffee className="size-8" />
                     </div>
-                    <h1 className="text-3xl font-black text-foreground tracking-tight">Kael Cafe</h1>
-                    <p className="text-muted-foreground mt-2 text-sm font-medium">Point of Sale Terminal</p>
+                    <h1 className="text-2xl font-black text-foreground tracking-tight">Kael Cafe</h1>
+                    <p className="text-muted-foreground mt-1 text-sm">Point of Sale</p>
                 </div>
 
-                {/* Login Card */}
-                <Card className="w-full border-border/50 shadow-2xl bg-card/80 backdrop-blur-xl">
-                    <CardHeader className="text-center pb-6">
-                        <CardTitle className="text-xl">Welcome Back</CardTitle>
-                        <CardDescription>Login with email and PIN to continue</CardDescription>
-                    </CardHeader>
+                <div className="bg-card/80 backdrop-blur-xl rounded-2xl border border-border/50 shadow-2xl p-6">
+                    <div className="text-center mb-6">
+                        <h2 className="text-base font-bold">Masuk</h2>
+                        <p className="text-xs text-muted-foreground mt-1">Gunakan email dan PIN untuk login</p>
+                    </div>
 
-                    <form onSubmit={handleSubmit}>
-                        <CardContent className="space-y-5">
-                            {error && (
-                                <Alert variant="destructive" className="bg-destructive/10 text-destructive border-0">
-                                    <AlertCircle className="size-4" />
-                                    <AlertDescription className="font-bold ml-2">
-                                        {error}
-                                    </AlertDescription>
-                                </Alert>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        {error && (
+                            <Alert variant="destructive" className="bg-destructive/10 text-destructive border-0 rounded-xl">
+                                <AlertCircle className="size-4" />
+                                <AlertDescription className="font-bold ml-2 text-sm">{error}</AlertDescription>
+                            </Alert>
+                        )}
+
+                        <div className="space-y-1.5">
+                            <Label htmlFor="email" className="text-xs text-muted-foreground">Email</Label>
+                            <div className="relative">
+                                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="staff@kaelcafe.com"
+                                    required
+                                    className="pl-10 h-11 bg-muted/40 border-0 rounded-xl"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <Label htmlFor="pin" className="text-xs text-muted-foreground">PIN</Label>
+                            <div className="relative">
+                                <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                                <Input
+                                    id="pin"
+                                    type="password"
+                                    value={pin}
+                                    onChange={(e) => setPin(e.target.value)}
+                                    placeholder="••••"
+                                    required
+                                    maxLength={8}
+                                    className="pl-10 h-11 bg-muted/40 border-0 rounded-xl tracking-[0.3em] font-mono text-lg"
+                                />
+                            </div>
+                        </div>
+
+                        <Button
+                            type="submit"
+                            disabled={isLoading || !email || !pin}
+                            className="w-full h-11 font-bold rounded-xl shadow-lg shadow-primary/20 mt-2"
+                        >
+                            {isLoading ? (
+                                <><Loader2 className="size-4 mr-2 animate-spin" />Memproses...</>
+                            ) : (
+                                <><LogIn className="size-4 mr-2" />Masuk</>
                             )}
-
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email Address</Label>
-                                <div className="relative">
-                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                                    <Input
-                                        id="email"
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="staff@kaelcafe.com"
-                                        required
-                                        className="pl-9 h-12 bg-background"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="pin">PIN</Label>
-                                <div className="relative">
-                                    <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                                    <Input
-                                        id="pin"
-                                        type="password"
-                                        value={pin}
-                                        onChange={(e) => setPin(e.target.value)}
-                                        placeholder="••••"
-                                        required
-                                        maxLength={8}
-                                        className="pl-9 h-12 bg-background tracking-[0.3em] font-mono text-lg"
-                                    />
-                                </div>
-                            </div>
-                        </CardContent>
-
-                        <CardFooter className="pt-2 pb-6 px-6">
-                            <Button
-                                type="submit"
-                                disabled={isLoading || !email || !pin}
-                                className="w-full h-12 font-bold text-base shadow-lg shadow-primary/20 transition-all hover:shadow-primary/30"
-                            >
-                                {isLoading ? (
-                                    <>
-                                        <Loader2 className="size-5 mr-2 animate-spin" />
-                                        Authenticating...
-                                    </>
-                                ) : (
-                                    <>
-                                        <LogIn className="size-5 mr-2" />
-                                        Sign In
-                                    </>
-                                )}
-                            </Button>
-                        </CardFooter>
+                        </Button>
                     </form>
-                </Card>
+                </div>
 
-                <p className="text-center text-xs text-muted-foreground mt-8 font-medium">
-                    &copy; {new Date().getFullYear()} Kael Cafe POS &mdash; All rights reserved
+                <p className="text-center text-[10px] text-muted-foreground/60 mt-6">
+                    &copy; {new Date().getFullYear()} Kael Cafe POS
                 </p>
             </div>
         </div>

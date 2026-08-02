@@ -11,22 +11,14 @@ import {
     CheckCheck,
     Receipt,
     Printer,
-    CheckCircle2,
-    Loader2
+    Loader2,
+    Clock,
 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 function formatRupiah(num) {
@@ -35,39 +27,36 @@ function formatRupiah(num) {
 
 const STATUS_CONFIG = {
     new: {
-        label: "New",
-        variant: "default",
-        customClass: "bg-blue-500 hover:bg-blue-600 text-white",
-        dot: "bg-white",
-        action: "Accept",
-        actionBtnVariant: "outline",
-        actionBtnClass: "text-primary border-primary/20 hover:bg-primary hover:text-primary-foreground",
+        label: "Baru",
+        bg: "bg-blue-500/10",
+        text: "text-blue-600 dark:text-blue-400",
+        dot: "bg-blue-500",
+        action: "Terima",
+        actionClass: "bg-blue-500 hover:bg-blue-600 text-white",
         nextStatus: "preparing",
     },
     preparing: {
-        label: "Preparing",
-        variant: "secondary",
-        customClass: "bg-amber-500/10 text-amber-600 hover:bg-amber-500/20",
+        label: "Diproses",
+        bg: "bg-amber-500/10",
+        text: "text-amber-600 dark:text-amber-400",
         dot: "bg-amber-500 animate-pulse",
-        action: "Mark Ready",
-        actionBtnVariant: "outline",
-        actionBtnClass: "text-emerald-600 border-emerald-200 bg-emerald-50 hover:bg-emerald-500 hover:text-white hover:border-emerald-500",
+        action: "Siap",
+        actionClass: "bg-emerald-500 hover:bg-emerald-600 text-white",
         nextStatus: "ready",
     },
     ready: {
-        label: "Ready",
-        variant: "secondary",
-        customClass: "bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20",
+        label: "Siap",
+        bg: "bg-emerald-500/10",
+        text: "text-emerald-600 dark:text-emerald-400",
         icon: Check,
-        action: "Complete",
-        actionBtnVariant: "secondary",
-        actionBtnClass: "text-muted-foreground",
+        action: "Selesai",
+        actionClass: "bg-primary hover:bg-primary/90 text-primary-foreground",
         nextStatus: "completed",
     },
     completed: {
-        label: "Completed",
-        variant: "outline",
-        customClass: "text-muted-foreground",
+        label: "Selesai",
+        bg: "bg-muted/50",
+        text: "text-muted-foreground",
         icon: CheckCheck,
     },
 };
@@ -98,23 +87,15 @@ export default function Orders() {
     const handleUpdateStatus = async (orderId, newStatus) => {
         setUpdatingId(orderId);
         const result = await updateOrderStatus(orderId, newStatus);
-        if (result.success) {
-            await loadOrders();
-        } else {
-            alert("Error: " + result.error);
-        }
+        if (result.success) await loadOrders();
+        else alert("Error: " + result.error);
         setUpdatingId(null);
     };
 
     const filteredOrders = orders.filter((order) => {
-        if (searchQuery) {
-            const q = searchQuery.toLowerCase();
-            return (
-                order.orderNumber.toLowerCase().includes(q) ||
-                (order.cashier?.name || "").toLowerCase().includes(q)
-            );
-        }
-        return true;
+        if (!searchQuery) return true;
+        const q = searchQuery.toLowerCase();
+        return order.orderNumber.toLowerCase().includes(q) || (order.cashier?.name || "").toLowerCase().includes(q);
     });
 
     const statusCounts = {
@@ -126,259 +107,193 @@ export default function Orders() {
     };
 
     return (
-        <main className="flex-1 flex flex-col bg-background overflow-y-auto">
-            <header className="px-4 pl-14 lg:px-8 py-4 lg:py-6 bg-card border-b border-border sticky top-0 z-10 flex flex-col gap-4 md:flex-row md:items-center justify-between">
-                <div>
-                    <h2 className="text-xl lg:text-2xl font-bold text-foreground tracking-tight">
-                        Order Management
-                    </h2>
-                    <p className="text-xs lg:text-sm text-muted-foreground mt-1">
-                        Track and manage incoming cafe orders.
-                    </p>
-                </div>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                        <Input
-                            type="text"
-                            placeholder="Search by Order ID..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 bg-muted/50 border-transparent rounded-lg text-sm focus-visible:ring-primary sm:w-64 lg:w-80"
-                        />
-                    </div>
-                    <Button
-                        variant="outline"
-                        onClick={loadOrders}
-                        className="flex items-center gap-2 rounded-lg font-medium shadow-sm bg-background border-border"
-                    >
+        <div className="flex flex-col min-h-full">
+            {/* Header */}
+            <div className="px-4 lg:px-6 pt-4 pb-2 space-y-3 bg-background sticky top-0 z-10">
+                <div className="flex items-center justify-between">
+                    <h1 className="text-lg font-black text-foreground">Pesanan</h1>
+                    <Button variant="ghost" size="icon" onClick={loadOrders} className="size-8 rounded-full">
                         <RefreshCw className="size-4" />
-                        Refresh
                     </Button>
                 </div>
-            </header>
+                <div className="relative">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                    <Input
+                        type="text"
+                        placeholder="Cari pesanan..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full pl-10 h-10 bg-muted/50 border-0 rounded-xl text-sm"
+                    />
+                </div>
+            </div>
 
-            <div className="p-4 lg:p-8 max-w-7xl mx-auto w-full">
-                {/* Status Tabs */}
-                <ScrollArea className="w-full mb-6 pb-2">
-                    <div className="flex gap-2">
-                        <Button
-                            variant={statusFilter === null ? "default" : "outline"}
-                            onClick={() => setStatusFilter(null)}
-                            className={`rounded-xl font-bold px-6 h-11 border-border ${statusFilter === null ? "shadow-md bg-primary text-primary-foreground" : "bg-card hover:bg-muted text-muted-foreground hover:text-foreground"}`}
-                        >
-                            All Orders ({statusCounts.all})
-                        </Button>
-                        {Object.entries(STATUS_CONFIG).map(([key, config]) => (
-                            <Button
-                                key={key}
-                                variant={statusFilter === key ? "default" : "outline"}
-                                onClick={() => setStatusFilter(key)}
-                                className={`rounded-xl font-bold px-6 h-11 border-border ${statusFilter === key ? "shadow-md bg-primary text-primary-foreground" : "bg-card hover:bg-muted text-muted-foreground hover:text-foreground"}`}
+            {/* Status Tabs */}
+            <div className="px-4 lg:px-6 py-2 bg-background sticky top-[108px] z-10">
+                <ScrollArea className="w-full">
+                    <div className="flex gap-1.5 pb-1">
+                        {[{ key: null, label: "Semua", count: statusCounts.all }, ...Object.entries(STATUS_CONFIG).map(([key, c]) => ({ key, label: c.label, count: statusCounts[key] || 0 }))].map((tab) => (
+                            <button
+                                key={tab.key ?? "all"}
+                                onClick={() => setStatusFilter(tab.key)}
+                                className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 ${statusFilter === tab.key
+                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                    : "bg-muted/60 text-muted-foreground hover:bg-muted"
+                                    }`}
                             >
-                                {config.label} ({statusCounts[key] || 0})
-                            </Button>
+                                {tab.label}
+                                <span className={`text-[10px] tabular-nums ${statusFilter === tab.key ? "opacity-80" : "opacity-60"}`}>
+                                    {tab.count}
+                                </span>
+                            </button>
                         ))}
                     </div>
                     <ScrollBar orientation="horizontal" className="hidden" />
                 </ScrollArea>
+            </div>
 
-                {/* Orders Table */}
-                <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <Table className="min-w-[800px]">
-                            <TableHeader className="bg-muted/50">
-                                <TableRow className="hover:bg-transparent border-border">
-                                    <TableHead className="font-semibold text-muted-foreground h-12 uppercase text-xs tracking-wider">Order ID</TableHead>
-                                    <TableHead className="font-semibold text-muted-foreground h-12 uppercase text-xs tracking-wider">Items</TableHead>
-                                    <TableHead className="font-semibold text-muted-foreground h-12 uppercase text-xs tracking-wider">Total</TableHead>
-                                    <TableHead className="font-semibold text-muted-foreground h-12 uppercase text-xs tracking-wider">Payment</TableHead>
-                                    <TableHead className="font-semibold text-muted-foreground h-12 uppercase text-xs tracking-wider">Time</TableHead>
-                                    <TableHead className="font-semibold text-muted-foreground h-12 uppercase text-xs tracking-wider">Status</TableHead>
-                                    <TableHead className="font-semibold text-muted-foreground h-12 uppercase text-xs tracking-wider text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {isLoading ? (
-                                    <TableRow>
-                                        <TableCell colSpan={7} className="h-32 text-center">
-                                            <Loader2 className="size-8 animate-spin text-primary mx-auto" />
-                                        </TableCell>
-                                    </TableRow>
-                                ) : filteredOrders.length === 0 ? (
-                                    <TableRow>
-                                        <TableCell colSpan={7} className="h-40 text-center text-muted-foreground">
-                                            <Receipt className="size-10 mb-2 block mx-auto opacity-50" />
-                                            No orders found
-                                        </TableCell>
-                                    </TableRow>
-                                ) : (
-                                    filteredOrders.map((order) => {
-                                        const config = STATUS_CONFIG[order.status];
-                                        const isCompleted = order.status === "completed";
-                                        const Icon = config.icon;
+            {/* Order Cards */}
+            <div className="flex-1 px-4 lg:px-6 pb-4 space-y-2.5">
+                {isLoading ? (
+                    <div className="flex items-center justify-center py-20">
+                        <Loader2 className="size-6 animate-spin text-primary" />
+                    </div>
+                ) : filteredOrders.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                        <Receipt className="size-10 opacity-20 mb-3" />
+                        <p className="text-sm font-medium">Belum ada pesanan</p>
+                    </div>
+                ) : (
+                    filteredOrders.map((order) => {
+                        const config = STATUS_CONFIG[order.status];
+                        const isCompleted = order.status === "completed";
+                        const Icon = config.icon;
 
-                                        return (
-                                            <TableRow
-                                                key={order.id}
-                                                className={`hover:bg-muted/50 border-border transition-colors group ${isCompleted ? "opacity-75" : ""}`}
+                        return (
+                            <div
+                                key={order.id}
+                                className={`bg-card rounded-2xl border border-border/60 p-4 transition-all ${isCompleted ? "opacity-60" : ""}`}
+                            >
+                                {/* Top row: order number + status + time */}
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-black text-foreground">#{order.orderNumber}</span>
+                                        <Badge variant="secondary" className={`gap-1 px-2 py-0.5 font-bold text-[10px] border-0 rounded-full ${config.bg} ${config.text}`}>
+                                            {config.dot && <span className={`size-1.5 rounded-full ${config.dot}`}></span>}
+                                            {Icon && <Icon className="size-3" />}
+                                            {config.label}
+                                        </Badge>
+                                    </div>
+                                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                        <Clock className="size-3" />
+                                        {new Date(order.createdAt).toLocaleTimeString("id-ID", { hour: "numeric", minute: "2-digit" })}
+                                    </div>
+                                </div>
+
+                                {/* Items */}
+                                <div className="space-y-1 mb-3">
+                                    {order.items?.slice(0, 3).map((item, i) => (
+                                        <div key={i} className="flex justify-between text-sm">
+                                            <span className="text-muted-foreground">{item.quantity}x {item.productName}</span>
+                                            <span className="font-medium tabular-nums">{formatRupiah(item.subtotal)}</span>
+                                        </div>
+                                    ))}
+                                    {order.items?.length > 3 && (
+                                        <p className="text-xs text-muted-foreground">+{order.items.length - 3} item lainnya</p>
+                                    )}
+                                </div>
+
+                                {/* Bottom: total + action */}
+                                <div className="flex items-center justify-between pt-3 border-t border-border/50">
+                                    <div>
+                                        <span className="text-xs text-muted-foreground">Total</span>
+                                        <p className="text-base font-black text-foreground tabular-nums">{formatRupiah(order.total)}</p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        {isCompleted && (
+                                            <Button variant="outline" size="sm" onClick={() => setReceiptOrder(order)} className="h-8 px-3 text-xs font-bold rounded-xl">
+                                                <Receipt className="size-3 mr-1.5" />
+                                                Struk
+                                            </Button>
+                                        )}
+                                        {config.action && (
+                                            <Button
+                                                size="sm"
+                                                onClick={() => handleUpdateStatus(order.id, config.nextStatus)}
+                                                disabled={updatingId === order.id}
+                                                className={`h-8 px-4 text-xs font-bold rounded-xl ${config.actionClass}`}
                                             >
-                                                <TableCell className="font-bold text-foreground">
-                                                    #{order.orderNumber}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <p className="text-sm font-medium text-foreground">
-                                                        {order.items?.slice(0, 2).map((item) => `${item.quantity}× ${item.productName}`).join(", ")}
-                                                        {order.items?.length > 2 && "..."}
-                                                    </p>
-                                                    <p className="text-xs text-primary font-bold mt-0.5">
-                                                        {order.items?.length || 0} items
-                                                    </p>
-                                                </TableCell>
-                                                <TableCell className="font-bold text-foreground">
-                                                    {formatRupiah(order.total)}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge variant="secondary" className="uppercase font-bold text-[10px] bg-muted text-muted-foreground">
-                                                        {order.paymentMethod}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell className="text-sm text-muted-foreground font-medium">
-                                                    {new Date(order.createdAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge variant={config.variant} className={`gap-1.5 px-2.5 py-1 font-bold uppercase text-[10px] border-0 ${config.customClass}`}>
-                                                        {config.dot && <span className={`size-1.5 rounded-full ${config.dot}`}></span>}
-                                                        {Icon && <Icon className="size-3" />}
-                                                        {config.label}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell className="text-right">
-                                                    <div className="flex justify-end items-center gap-2">
-                                                        {config.action && (
-                                                            <Button
-                                                                size="sm"
-                                                                variant={config.actionBtnVariant}
-                                                                onClick={() => handleUpdateStatus(order.id, config.nextStatus)}
-                                                                disabled={updatingId === order.id}
-                                                                className={`h-8 px-3 text-xs font-bold rounded-lg ${config.actionBtnClass}`}
-                                                            >
-                                                                {updatingId === order.id ? <Loader2 className="size-3 animate-spin" /> : config.action}
-                                                            </Button>
-                                                        )}
-                                                        {isCompleted && (
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                onClick={() => setReceiptOrder(order)}
-                                                                className="size-8 text-muted-foreground hover:text-primary rounded-lg"
-                                                                title="View Receipt"
-                                                            >
-                                                                <Receipt className="size-4" />
-                                                            </Button>
-                                                        )}
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
-
-                    <div className="p-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground font-medium bg-card">
-                        <p className="text-center sm:text-left">
-                            Showing {filteredOrders.length} of {orders.length} entries
-                        </p>
-                    </div>
-                </div>
+                                                {updatingId === order.id ? <Loader2 className="size-3 animate-spin" /> : config.action}
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })
+                )}
             </div>
 
             {/* Receipt Modal */}
             <Dialog open={!!receiptOrder} onOpenChange={(open) => { if (!open) setReceiptOrder(null); }}>
-                <DialogContent className="sm:max-w-md p-0 overflow-hidden bg-card border-border">
+                <DialogContent className="sm:max-w-sm p-0 overflow-hidden bg-card border-border rounded-2xl">
                     <DialogHeader className="p-0 border-b-0 space-y-0">
-                        <DialogTitle className="sr-only">Order Receipt</DialogTitle>
+                        <DialogTitle className="sr-only">Struk Pesanan</DialogTitle>
                     </DialogHeader>
                     {receiptOrder && (
                         <>
-                            <div className="p-8 text-center bg-card print:p-0 print:text-black" id="receipt-content">
-                                <h3 className="text-xl font-black text-foreground print:text-black mb-1">
-                                    Order Receipt
-                                </h3>
-                                <p className="text-muted-foreground print:text-black text-sm font-mono mb-6">
-                                    #{receiptOrder.orderNumber}
-                                </p>
+                            <div className="p-6 text-center">
+                                <h3 className="text-lg font-black text-foreground">Struk Pesanan</h3>
+                                <p className="text-muted-foreground text-xs font-mono mt-1">#{receiptOrder.orderNumber}</p>
 
-                                <div className="border-t border-dashed border-border print:border-black pt-4 space-y-2 text-left">
+                                <div className="border-t border-dashed border-border mt-4 pt-4 space-y-1.5 text-left">
                                     {receiptOrder.items?.map((item, i) => (
                                         <div key={i} className="flex justify-between text-sm">
-                                            <span className="text-muted-foreground print:text-black font-medium">
-                                                {item.quantity}× {item.productName}
-                                            </span>
-                                            <span className="font-bold text-foreground print:text-black">
-                                                {formatRupiah(item.subtotal)}
-                                            </span>
+                                            <span className="text-muted-foreground">{item.quantity}x {item.productName}</span>
+                                            <span className="font-bold tabular-nums">{formatRupiah(item.subtotal)}</span>
                                         </div>
                                     ))}
                                 </div>
 
-                                <div className="border-t border-dashed border-border print:border-black mt-4 pt-4 space-y-1.5 text-left">
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground print:text-black">Subtotal</span>
-                                        <span className="font-medium text-foreground print:text-black">{formatRupiah(receiptOrder.subtotal)}</span>
-                                    </div>
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground print:text-black">Tax</span>
-                                        <span className="font-medium text-foreground print:text-black">+{formatRupiah(receiptOrder.tax)}</span>
-                                    </div>
-                                    {receiptOrder.discount > 0 && (
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-emerald-500 font-medium print:text-black">Discount</span>
-                                            <span className="text-emerald-600 font-medium print:text-black">-{formatRupiah(receiptOrder.discount)}</span>
-                                        </div>
-                                    )}
-                                    <div className="flex justify-between text-base font-black pt-3 mt-1 border-t border-border print:border-black print:text-black">
-                                        <span>Total</span>
-                                        <span className="text-primary print:text-black">{formatRupiah(receiptOrder.total)}</span>
+                                <div className="border-t border-dashed border-border mt-4 pt-3 text-left space-y-1">
+                                    <div className="flex justify-between items-baseline">
+                                        <span className="text-sm text-muted-foreground">Total</span>
+                                        <span className="text-lg font-black tabular-nums">{formatRupiah(receiptOrder.total)}</span>
                                     </div>
                                     {receiptOrder.amountPaid && (
                                         <>
-                                            <div className="flex justify-between text-sm mt-2">
-                                                <span className="text-muted-foreground print:text-black font-medium">Dibayar</span>
-                                                <span className="font-bold text-foreground print:text-black">{formatRupiah(receiptOrder.amountPaid)}</span>
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-muted-foreground">Dibayar</span>
+                                                <span className="font-bold tabular-nums">{formatRupiah(receiptOrder.amountPaid)}</span>
                                             </div>
                                             <div className="flex justify-between text-sm">
-                                                <span className="text-emerald-600 print:text-black font-bold">Kembalian</span>
-                                                <span className="text-emerald-600 print:text-black font-black">{formatRupiah(receiptOrder.changeAmount)}</span>
+                                                <span className="text-emerald-600 dark:text-emerald-400 font-bold">Kembalian</span>
+                                                <span className="text-emerald-600 dark:text-emerald-400 font-black tabular-nums">{formatRupiah(receiptOrder.changeAmount)}</span>
                                             </div>
                                         </>
                                     )}
                                 </div>
 
-                                <div className="mt-5 pt-4 border-t border-dashed border-border print:border-black text-xs text-muted-foreground print:text-black font-medium">
-                                    <p>Payment: {receiptOrder.paymentMethod?.toUpperCase()}</p>
-                                    <p className="mt-0.5">{new Date(receiptOrder.createdAt).toLocaleString("id-ID")}</p>
-                                    <p className="mt-3 font-bold text-card-foreground print:text-black">
-                                        {receiptFooter || `Thank you for visiting ${storeName || 'Kaelcafe'} ☕`}
+                                <div className="mt-4 pt-3 border-t border-dashed border-border text-[11px] text-muted-foreground">
+                                    <p>{receiptOrder.paymentMethod?.toUpperCase()} &middot; {new Date(receiptOrder.createdAt).toLocaleString("id-ID")}</p>
+                                    <p className="mt-2 font-semibold text-card-foreground text-xs">
+                                        {receiptFooter || `Terima kasih sudah berkunjung di ${storeName || "Kael Cafe"}`}
                                     </p>
                                 </div>
                             </div>
-
-                            <div className="p-4 border-t border-border flex gap-3 print:hidden bg-muted/20">
-                                <Button variant="outline" onClick={() => window.print()} className="flex-1 h-12 rounded-xl font-bold bg-background">
+                            <div className="p-4 border-t border-border flex gap-2 bg-muted/30">
+                                <Button variant="outline" onClick={() => window.print()} className="flex-1 h-10 rounded-xl font-bold">
                                     <Printer className="size-4 mr-2" />
                                     Print
                                 </Button>
-                                <Button onClick={() => setReceiptOrder(null)} className="flex-1 h-12 rounded-xl font-bold">
-                                    Close
+                                <Button onClick={() => setReceiptOrder(null)} className="flex-1 h-10 rounded-xl font-bold">
+                                    Tutup
                                 </Button>
                             </div>
                         </>
                     )}
                 </DialogContent>
             </Dialog>
-        </main>
+        </div>
     );
 }

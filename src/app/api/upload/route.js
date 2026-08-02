@@ -1,6 +1,7 @@
+export const runtime = 'edge';
+
+import { getRequestContext } from "@cloudflare/next-on-pages";
 import { NextResponse } from "next/server";
-import path from "path";
-import fs from "fs/promises";
 
 export async function POST(request) {
     try {
@@ -32,21 +33,30 @@ export async function POST(request) {
         }
 
         // Generate unique filename
-        const ext = path.extname(file.name) || ".jpg";
+        const ext = file.name.substring(file.name.lastIndexOf('.')) || ".jpg";
         const filename = `${Date.now()}-${crypto.randomUUID().slice(0, 8)}${ext}`;
 
-        // Save to public/uploads
-        const uploadsDir = path.join(process.cwd(), "public", "uploads");
-        await fs.mkdir(uploadsDir, { recursive: true });
+        const buffer = await file.arrayBuffer();
+        const bytes = new Uint8Array(buffer);
 
-        const buffer = Buffer.from(await file.arrayBuffer());
-        const filepath = path.join(uploadsDir, filename);
-        await fs.writeFile(filepath, buffer);
+        const ctx = getRequestContext();
+        const bucket = ctx?.env?.POS_BUCKET;
 
-        // Return the public URL
-        const imageUrl = `/uploads/${filename}`;
+        if (!bucket) {
+            // Local fallback logic if R2 isn't bound in dev
+            console.warn("POS_BUCKET not bound. Simulated upload success.");
+            return NextResponse.json({ success: true, imageUrl: `/uploads/${filename}` });
+        }
 
-        return NextResponse.json({ success: true, imageUrl });
+        await bucket.put(filename, bytes, {
+            httpMetadata: { contentType: file.type }
+        });
+
+        // The image will be accessible via R2 custom domain
+        // Update this URL prefix once you configure a public bucket domain
+        const imageUrl = `https://assets.kaelcafe.com/${filename}`;
+
+        return NextResponse.json({ success: true, url: imageUrl }); // Settings form expects `url` 
     } catch (error) {
         return NextResponse.json(
             { success: false, error: error.message },

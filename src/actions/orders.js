@@ -1,4 +1,5 @@
 "use server";
+export const runtime = 'edge';
 
 import { db } from "@/lib/db";
 import {
@@ -6,7 +7,7 @@ import {
     orderItems,
     products,
 } from "@/db/schema";
-import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
+import { eq, desc, gte, lte } from "drizzle-orm";
 
 function generateOrderNumber() {
     const now = new Date();
@@ -18,16 +19,12 @@ function generateOrderNumber() {
 export async function createOrder({
     items,
     paymentMethod = "cash",
-    taxEnabled = true,
-    discountCode = null,
-    notes = null,
     cashierId = null,
     amountPaid = null,
 }) {
     try {
         const orderNumber = generateOrderNumber();
 
-        // Calculate subtotal from items
         let subtotal = 0;
         const orderItemsData = [];
 
@@ -37,7 +34,7 @@ export async function createOrder({
             });
 
             if (!product) {
-                return { success: false, error: `Product not found: ${item.productId}` };
+                return { success: false, error: `Produk tidak ditemukan: ${item.productId}` };
             }
 
             const itemSubtotal = product.price * item.quantity;
@@ -50,23 +47,13 @@ export async function createOrder({
                 quantity: item.quantity,
                 unitPrice: product.price,
                 subtotal: itemSubtotal,
-                notes: item.notes || null,
             });
         }
 
-        // Calculate tax and discount
-        const tax = taxEnabled ? Math.round(subtotal * 0.1) : 0;
-        let discount = 0;
-        if (discountCode === "CODE10") {
-            discount = Math.round(subtotal * 0.1);
-        }
-        const total = subtotal + tax - discount;
-
-        // Calculate change for cash payments
+        const total = subtotal;
         const paidAmount = paymentMethod === "cash" && amountPaid ? amountPaid : null;
         const changeAmount = paidAmount ? paidAmount - total : null;
 
-        // Use a transaction to insert both order and items
         const orderId = crypto.randomUUID();
         const now = new Date();
 
@@ -77,15 +64,14 @@ export async function createOrder({
                     id: orderId,
                     orderNumber,
                     subtotal,
-                    tax,
-                    discount,
+                    tax: 0,
+                    discount: 0,
                     total,
                     paymentMethod,
                     amountPaid: paidAmount,
                     changeAmount,
                     status: "new",
                     cashierId,
-                    notes,
                     createdAt: now,
                     updatedAt: now,
                 })
