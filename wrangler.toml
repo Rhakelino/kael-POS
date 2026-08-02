@@ -6,7 +6,7 @@ pages_build_output_dir = ".vercel/output/static"
 [[d1_databases]]
 binding = "DB"
 database_name = "kael-cafe-db"
-database_id = "local-d1-dev" # Local mock ID, akan diganti pas deploy asli
+database_id = "f502de4b-2a4d-4331-b943-5149b8cbe325"
 
 [[r2_buckets]]
 binding = "POS_BUCKET"
