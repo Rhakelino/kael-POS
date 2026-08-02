@@ -1,11 +1,9 @@
 import { drizzle as drizzleD1 } from "drizzle-orm/d1";
 import * as schema from "../db/schema.js";
+import { getRequestContext } from "@cloudflare/next-on-pages";
 
-// Lazy-load DB from Cloudflare Context
 export function getDb() {
-    // Edge/Cloudflare environment
-    if (typeof process === "undefined" || process.env.NEXT_RUNTIME === "edge") {
-        const { getRequestContext } = require("@cloudflare/next-on-pages");
+    if (process.env.NODE_ENV === "production" || process.env.NEXT_RUNTIME === "edge") {
         const ctx = getRequestContext();
         if (ctx?.env?.DB) {
             return drizzleD1(ctx.env.DB, { schema });
@@ -13,7 +11,6 @@ export function getDb() {
     }
     
     // Serverless/Node fallback (untuk Drizzle Kit Studio / Push lokal)
-    // Jangan di-load di edge
     const Database = require("better-sqlite3");
     const { drizzle: drizzleBetter } = require("drizzle-orm/better-sqlite3");
     const path = require("path");
@@ -26,10 +23,10 @@ export function getDb() {
     return drizzleBetter(sqlite, { schema });
 }
 
-// Proxy wrapper biar nggak break import `import { db } from "@/lib/db"`
 export const db = new Proxy({}, {
     get: (target, prop) => {
         const actualDb = getDb();
         return actualDb[prop];
     }
 });
+

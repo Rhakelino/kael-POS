@@ -1,5 +1,4 @@
 "use server";
-export const runtime = 'edge';
 
 import { db } from "@/lib/db";
 import { categories, products } from "@/db/schema";
