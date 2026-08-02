@@ -1,5 +1,5 @@
-import { getDb } from "../../db.js";
-import { products, categories } from "../../../src/db/schema.js";
+import { getDb } from "../db.js";
+import { products, categories } from "../db_schema/schema.js";
 import { eq, desc } from "drizzle-orm";
 
 export async function onRequestGet(context) {

@@ -1,5 +1,5 @@
 import { getDb } from "../../db.js";
-import { users } from "../../../src/db/schema.js";
+import { users } from "../../db_schema/schema.js";
 import { eq, and } from "drizzle-orm";
 
 export async function onRequestPost(context) {

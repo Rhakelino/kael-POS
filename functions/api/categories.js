@@ -1,5 +1,5 @@
-import { getDb } from "../../db.js";
-import { categories } from "../../../src/db/schema.js";
+import { getDb } from "../db.js";
+import { categories } from "../db_schema/schema.js";
 
 export async function onRequestGet(context) {
     try {

@@ -1,5 +1,5 @@
-import { getDb } from "../../db.js";
-import { orders, orderItems } from "../../../src/db/schema.js";
+import { getDb } from "../db.js";
+import { orders, orderItems } from "../db_schema/schema.js";
 import { eq, desc } from "drizzle-orm";
 
 function generateOrderNumber() {
