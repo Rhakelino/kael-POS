@@ -35,8 +35,8 @@ export async function POST(request) {
         const buffer = await file.arrayBuffer();
         const bytes = new Uint8Array(buffer);
 
-        // OpenNext expose binding ke process.env
-        const bucket = process.env.POS_BUCKET;
+        const ctx = getRequestContext();
+        const bucket = ctx?.env?.POS_BUCKET;
 
         if (!bucket) {
             console.warn("POS_BUCKET not bound. Simulated upload success.");
