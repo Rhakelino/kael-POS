@@ -27,7 +27,7 @@ export async function onRequestPost(context) {
         
         const orderNumber = generateOrderNumber();
         const orderId = crypto.randomUUID();
-        const now = Date.now();
+        const now = new Date();
         
         let subtotal = 0;
         for (const item of body.items) { subtotal += item.price * item.quantity; }

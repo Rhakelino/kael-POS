@@ -32,6 +32,7 @@ export async function onRequestPost(context) {
         const db = getDb(context.env);
         const body = await context.request.json();
         const id = crypto.randomUUID();
+        const now = new Date();
         
         await db.insert(products).values({
             id,
@@ -41,8 +42,8 @@ export async function onRequestPost(context) {
             sku: body.sku,
             imageUrl: body.imageUrl,
             isActive: 1,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
+            createdAt: now,
+            updatedAt: now,
         });
         
         return Response.json({ success: true, id });

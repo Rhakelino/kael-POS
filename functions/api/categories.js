@@ -16,6 +16,7 @@ export async function onRequestPost(context) {
         const db = getDb(context.env);
         const body = await context.request.json();
         const id = crypto.randomUUID();
+        const now = new Date();
         
         await db.insert(categories).values({
             id,
@@ -23,7 +24,7 @@ export async function onRequestPost(context) {
             icon: body.icon,
             sortOrder: 0,
             isActive: 1,
-            createdAt: Date.now(),
+            createdAt: now,
         });
         
         return Response.json({ success: true, id });
