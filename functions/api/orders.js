@@ -46,6 +46,7 @@ export async function onRequestPost(context) {
             changeAmount,
             status: "new",
             cashierId: body.cashierId || null,
+            notes: null,
             createdAt: now,
             updatedAt: now,
         });
