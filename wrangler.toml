@@ -7,6 +7,3 @@ binding = "DB"
 database_name = "kael-cafe-db"
 database_id = "f502de4b-2a4d-4331-b943-5149b8cbe325"
 
-[[r2_buckets]]
-binding = "POS_BUCKET"
-bucket_name = "kael-pos-assets"
