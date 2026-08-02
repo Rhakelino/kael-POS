@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "npx @cloudflare/next-on-pages --watch",
     "build": "next build",
+    "build:pages": "npx @cloudflare/next-on-pages",
     "start": "next start",
     "lint": "eslint",
     "db:generate": "drizzle-kit generate",
