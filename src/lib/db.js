@@ -1,15 +1,11 @@
 import { drizzle as drizzleD1 } from "drizzle-orm/d1";
 import * as schema from "../db/schema.js";
+import { getRequestContext } from "@cloudflare/next-on-pages";
 
 export function getDb() {
-    try {
-        const { getRequestContext } = require("@cloudflare/next-on-pages");
-        const ctx = getRequestContext();
-        if (ctx?.env?.DB) {
-            return drizzleD1(ctx.env.DB, { schema });
-        }
-    } catch (e) {
-        // Fallback if getRequestContext is missing
+    const ctx = getRequestContext();
+    if (ctx?.env?.DB) {
+        return drizzleD1(ctx.env.DB, { schema });
     }
     
     return new Proxy({}, {

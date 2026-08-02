@@ -1,6 +1,7 @@
 export const runtime = 'edge';
 
 import { NextResponse } from "next/server";
+import { getRequestContext } from "@cloudflare/next-on-pages";
 
 export async function POST(request) {
     try {
@@ -26,14 +27,8 @@ export async function POST(request) {
         const buffer = await file.arrayBuffer();
         const bytes = new Uint8Array(buffer);
 
-        let bucket = null;
-        try {
-            const { getRequestContext } = require("@cloudflare/next-on-pages");
-            const ctx = getRequestContext();
-            bucket = ctx?.env?.POS_BUCKET;
-        } catch (e) {
-            // fallback
-        }
+        const ctx = getRequestContext();
+        const bucket = ctx?.env?.POS_BUCKET;
 
         if (!bucket) {
             console.warn("POS_BUCKET not bound. Simulated upload success.");
