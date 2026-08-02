@@ -9,10 +9,7 @@ export async function onRequestPost(context) {
         const db = getDb(env);
 
         const user = await db.query.users.findFirst({
-            where: and(
-                eq(users.email, body.email),
-                eq(users.pin, body.pin)
-            )
+            where: body.email ? and(eq(users.email, body.email), eq(users.pin, body.pin)) : eq(users.pin, body.pin)
         });
 
         if (!user) {

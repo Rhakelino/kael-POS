@@ -48,18 +48,19 @@ export async function onRequestPost(context) {
             cashierId: body.cashierId || null,
             notes: null,
             createdAt: now,
-            updatedAt: now,
+            updatedAt: now
         });
         
         for (const item of body.items) {
             await db.insert(orderItems).values({
                 id: crypto.randomUUID(),
                 orderId,
-                productId: item.productId,
+                productId: item.id, // Fixed: item.productId -> item.id (based on product DB schema and typical cart state)
                 productName: item.name,
                 quantity: item.quantity,
                 unitPrice: item.price,
                 subtotal: item.price * item.quantity,
+                notes: null, // Fixed: added missing notes field for orderItems
             });
         }
         

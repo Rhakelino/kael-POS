@@ -13,10 +13,10 @@ export const users = sqliteTable("users", {
     image: text("image"),
     role: text("role").notNull().default("cashier"), // 'admin' | 'cashier'
     pin: text("pin"), // Staff PIN for quick switching
-    createdAt: integer("created_at", { mode: "timestamp" })
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
         .notNull()
         .$defaultFn(() => new Date()),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
         .notNull()
         .$defaultFn(() => new Date()),
 });
@@ -30,10 +30,10 @@ export const sessions = sqliteTable("sessions", {
     expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
-    createdAt: integer("created_at", { mode: "timestamp" })
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
         .notNull()
         .$defaultFn(() => new Date()),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
         .notNull()
         .$defaultFn(() => new Date()),
 });
@@ -56,10 +56,10 @@ export const accounts = sqliteTable("accounts", {
     scope: text("scope"),
     idToken: text("id_token"),
     password: text("password"),
-    createdAt: integer("created_at", { mode: "timestamp" })
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
         .notNull()
         .$defaultFn(() => new Date()),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
         .notNull()
         .$defaultFn(() => new Date()),
 });
@@ -69,10 +69,10 @@ export const verifications = sqliteTable("verifications", {
     identifier: text("identifier").notNull(),
     value: text("value").notNull(),
     expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
-    createdAt: integer("created_at", { mode: "timestamp" })
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
         .notNull()
         .$defaultFn(() => new Date()),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
         .notNull()
         .$defaultFn(() => new Date()),
 });
@@ -103,10 +103,10 @@ export const products = sqliteTable("products", {
     imageUrl: text("image_url"),
     description: text("description"),
     isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
-    createdAt: integer("created_at", { mode: "timestamp" })
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
         .notNull()
         .$defaultFn(() => new Date()),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
         .notNull()
         .$defaultFn(() => new Date()),
 });
@@ -124,10 +124,10 @@ export const orders = sqliteTable("orders", {
     status: text("status").notNull().default("new"), // 'new' | 'preparing' | 'ready' | 'completed'
     cashierId: text("cashier_id").references(() => users.id),
     notes: text("notes"),
-    createdAt: integer("created_at", { mode: "timestamp" })
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
         .notNull()
         .$defaultFn(() => new Date()),
-    updatedAt: integer("updated_at", { mode: "timestamp" })
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
         .notNull()
         .$defaultFn(() => new Date()),
 });
@@ -146,10 +146,6 @@ export const orderItems = sqliteTable("order_items", {
     subtotal: real("subtotal").notNull(),
     notes: text("notes"),
 });
-
-
-
-// ============================================================
 // Relations
 // ============================================================
 

@@ -33,21 +33,21 @@ function CartPanel({ cart, total, updateQuantity, removeFromCart, resetCart, pay
                     </div>
                 ) : (
                     cart.map((item) => (
-                        <div key={item.productId} className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border/50">
+                        <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border/50">
                             <div className="flex-1 min-w-0">
                                 <h4 className="text-sm font-bold truncate">{item.name}</h4>
                                 <p className="text-xs text-muted-foreground mt-0.5">{formatRupiah(item.price * item.quantity)}</p>
                             </div>
                             <div className="flex items-center gap-0.5 bg-background border border-border rounded-full p-0.5">
-                                <Button variant="ghost" size="icon" className="size-7 rounded-full" onClick={() => updateQuantity(item.productId, -1)}>
+                                <Button variant="ghost" size="icon" className="size-7 rounded-full" onClick={() => updateQuantity(item.id, -1)}>
                                     <Minus className="size-3" />
                                 </Button>
                                 <span className="text-xs font-bold w-6 text-center tabular-nums">{item.quantity}</span>
-                                <Button variant="ghost" size="icon" className="size-7 rounded-full text-primary" onClick={() => updateQuantity(item.productId, 1)}>
+                                <Button variant="ghost" size="icon" className="size-7 rounded-full text-primary" onClick={() => updateQuantity(item.id, 1)}>
                                     <Plus className="size-3" />
                                 </Button>
                             </div>
-                            <Button variant="ghost" size="icon" className="size-7 rounded-full text-muted-foreground hover:text-destructive shrink-0" onClick={() => removeFromCart(item.productId)}>
+                            <Button variant="ghost" size="icon" className="size-7 rounded-full text-muted-foreground hover:text-destructive shrink-0" onClick={() => removeFromCart(item.id)}>
                                 <Trash2 className="size-3.5" />
                             </Button>
                         </div>
@@ -133,14 +133,14 @@ export default function Cashier() {
     const addToCart = (product) => {
         if (!product.isActive) return;
         setCart(prev => {
-            const existing = prev.find(item => item.productId === product.id);
-            if (existing) return prev.map(item => item.productId === product.id ? { ...item, quantity: item.quantity + 1 } : item);
-            return [...prev, { productId: product.id, name: product.name, price: product.price, quantity: 1 }];
+            const existing = prev.find(item => item.id === product.id);
+            if (existing) return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+            return [...prev, { id: product.id, name: product.name, price: product.price, quantity: 1 }];
         });
     };
 
-    const updateQuantity = (id, delta) => setCart(prev => prev.map(item => item.productId === id ? { ...item, quantity: item.quantity + delta } : item).filter(item => item.quantity > 0));
-    const removeFromCart = (id) => setCart(prev => prev.filter(item => item.productId !== id));
+    const updateQuantity = (id, delta) => setCart(prev => prev.map(item => item.id === id ? { ...item, quantity: item.quantity + delta } : item).filter(item => item.quantity > 0));
+    const removeFromCart = (id) => setCart(prev => prev.filter(item => item.id !== id));
     const resetCart = () => { setCart([]); setAmountPaid(""); };
 
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -164,9 +164,16 @@ export default function Cashier() {
         if (cart.length === 0) return;
         setIsSubmitting(true);
         try {
+            const payload = { 
+                items: cart.map(item => ({ id: item.id, name: item.name, price: item.price, quantity: item.quantity })),
+                paymentMethod, 
+                cashierId: user?.id || "1", // Fallback to "1" (Admin) if auth state is lost
+                amountPaid: isCash ? parsedAmountPaid : null 
+            };
             const res = await fetch("/api/orders", {
                 method: "POST",
-                body: JSON.stringify({ items: cart, paymentMethod, cashierId: user?.id, amountPaid: isCash ? parsedAmountPaid : null })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
             });
             const result = await res.json();
             if (result.success) {
@@ -196,7 +203,7 @@ export default function Cashier() {
                     {isLoading ? <div className="flex justify-center p-10"><div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div></div> : (
                         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2.5">
                             {filteredProducts.map(product => {
-                                const inCart = cart.find(i => i.productId === product.id);
+                                const inCart = cart.find(i => i.id === product.id);
                                 return (
                                     <button key={product.id} onClick={() => addToCart(product)} disabled={!product.isActive} className={`text-left bg-card p-2.5 rounded-2xl border ${!product.isActive ? "opacity-40 grayscale" : inCart ? "border-primary ring-1 ring-primary/20" : "border-border/60 hover:shadow-sm"}`}>
                                         <div className="aspect-[4/3] rounded-xl mb-2 bg-center bg-cover bg-muted relative" style={{ backgroundImage: product.imageUrl ? `url('${product.imageUrl}')` : undefined }}>
