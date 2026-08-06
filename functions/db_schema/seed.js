@@ -250,27 +250,9 @@ async function seed() {
             },
         ])
         .run();
-            {
-                id: prodTiramisu,
-                categoryId: catDessert,
-                name: "Tiramisu",
-                price: 48000,
-                sku: "DST-002",
-                imageUrl: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=500&auto=format&fit=crop&q=80",
-                description: "Classic Italian coffee dessert",
-                isActive: true,
-                createdAt: now,
-                updatedAt: now,
-            },
-        ])
-        .run();
-    console.log("  ✅ Created 12 products across 4 categories");
+    console.log("  ✅ Created 9 products across 4 categories");
 
     console.log("\n✨ Seed complete! Database is ready.\n");
-    console.log("📊 Summary:");
-    console.log("   • 2 Users (1 Admin, 1 Cashier)");
-    console.log("   • 4 Categories");
-    console.log("   • 12 Products");
 
     sqlite.close();
 }
