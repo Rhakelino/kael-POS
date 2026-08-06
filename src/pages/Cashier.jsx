@@ -199,7 +199,7 @@ export default function Cashier() {
                     <div className="relative"><Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" /><Input className="w-full pl-10 h-10 bg-muted/50 border-0 rounded-xl" placeholder="Cari menu..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} /></div>
                 </div>
                 <div className="px-4 py-2"><ScrollArea className="w-full"><div className="flex items-center gap-1.5 pb-1"><button onClick={() => setSelectedCategory(null)} className={`px-4 py-1.5 rounded-full text-xs font-bold ${selectedCategory === null ? "bg-primary text-primary-foreground" : "bg-muted/60 text-muted-foreground"}`}>Semua</button>{categories.map(cat => <button key={cat.id} onClick={() => setSelectedCategory(cat.id)} className={`px-4 py-1.5 rounded-full text-xs font-bold ${selectedCategory === cat.id ? "bg-primary text-primary-foreground" : "bg-muted/60 text-muted-foreground"}`}>{cat.icon} {cat.name}</button>)}</div></ScrollArea></div>
-                <div className="flex-1 overflow-y-auto px-4 pb-20">
+                <div className="flex-1 overflow-y-auto px-4 pb-40">
                     {isLoading ? <div className="flex justify-center p-10"><div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div></div> : (
                         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2.5">
                             {filteredProducts.map(product => {

@@ -1,5 +1,8 @@
--- Clean existing products to sync with full catalog
+-- Clean existing data (order_items references products, so delete first)
+DELETE FROM order_items;
+DELETE FROM orders;
 DELETE FROM products;
+DELETE FROM categories;
 
 -- Ensure categories exist
 INSERT OR IGNORE INTO categories (id, name, icon, sort_order, is_active, created_at) VALUES
