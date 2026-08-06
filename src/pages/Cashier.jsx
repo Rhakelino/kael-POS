@@ -223,12 +223,16 @@ export default function Cashier() {
             </div>
             <div className="hidden lg:block w-[360px] border-l border-border bg-card shrink-0 h-full"><CartPanel {...cartProps} /></div>
             {cart.length > 0 && (
-                <Sheet open={cartOpen} onOpenChange={setCartOpen}>
-                    <SheetTrigger className="lg:hidden fixed bottom-20 right-4 z-40 h-14 pl-5 pr-4 rounded-2xl bg-primary text-white flex items-center gap-3 shadow-xl cursor-pointer border-0">
+                <>
+                    <button onClick={() => setCartOpen(true)} className="lg:hidden fixed bottom-20 right-4 z-40 h-14 pl-5 pr-4 rounded-2xl bg-primary text-white flex items-center gap-3 shadow-xl cursor-pointer border-0">
                         <div className="flex flex-col items-start"><span className="text-[10px]">{cartCount} item</span><span className="text-sm font-black">{formatRupiah(total)}</span></div><ShoppingCart className="size-4" />
-                    </SheetTrigger>
-                    <SheetContent side="bottom" className="h-[90dvh] p-0 rounded-t-3xl flex flex-col overflow-hidden [&>button]:top-3 [&>button]:right-3"><CartPanel {...cartProps} /></SheetContent>
-                </Sheet>
+                    </button>
+                    <Dialog open={cartOpen} onOpenChange={setCartOpen}>
+                        <DialogContent className="sm:max-w-md p-0 max-h-[85dvh] flex flex-col overflow-hidden">
+                            <CartPanel {...cartProps} />
+                        </DialogContent>
+                    </Dialog>
+                </>
             )}
             <Dialog open={!!showReceipt} onOpenChange={(o) => { if (!o) setShowReceipt(null); }}>
                 <DialogContent className="sm:max-w-sm p-6 text-center">
