@@ -14,8 +14,8 @@ export async function onRequestGet(context) {
         const toMs = to ? new Date(to + "T23:59:59.999").getTime() : Date.now();
 
         const conditions = [];
-        if (from) conditions.push(gte(orders.createdAt, fromMs));
-        if (to) conditions.push(lt(orders.createdAt, toMs + 1));
+        if (from) conditions.push(gte(orders.createdAt, new Date(fromMs)));
+        if (to) conditions.push(lt(orders.createdAt, new Date(toMs + 1)));
 
         const orderList = await db.query.orders.findMany({
             with: { items: true },
