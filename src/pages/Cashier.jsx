@@ -228,7 +228,7 @@ export default function Cashier() {
                         <div className="flex flex-col items-start"><span className="text-[10px]">{cartCount} item</span><span className="text-sm font-black">{formatRupiah(total)}</span></div><ShoppingCart className="size-4" />
                     </button>
                     <Dialog open={cartOpen} onOpenChange={setCartOpen}>
-                        <DialogContent className="sm:max-w-md p-0 max-h-[85dvh] flex flex-col overflow-hidden">
+                        <DialogContent showCloseButton={false} className="sm:max-w-md p-0 !max-h-[85dvh] !h-[85dvh] flex flex-col overflow-hidden">
                             <CartPanel {...cartProps} />
                         </DialogContent>
                     </Dialog>
