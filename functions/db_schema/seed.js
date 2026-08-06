@@ -93,10 +93,10 @@ async function seed() {
 
     // --- Categories ---
     console.log("\n📂 Creating categories...");
-    const catCoffee = crypto.randomUUID();
-    const catNonCoffee = crypto.randomUUID();
-    const catBakery = crypto.randomUUID();
-    const catDessert = crypto.randomUUID();
+    const catCoffee = "cat-coffee";
+    const catNonCoffee = "cat-noncoffee";
+    const catFood = "cat-food";
+    const catDessert = "cat-dessert";
 
     db.insert(schema.categories)
         .values([
@@ -117,9 +117,9 @@ async function seed() {
                 createdAt: new Date(),
             },
             {
-                id: catBakery,
-                name: "Bakery",
-                icon: "bakery_dining",
+                id: catFood,
+                name: "Food",
+                icon: "restaurant",
                 sortOrder: 3,
                 isActive: true,
                 createdAt: new Date(),
@@ -134,174 +134,122 @@ async function seed() {
             },
         ])
         .run();
-    console.log("  ✅ Created: Coffee, Non-Coffee, Bakery, Dessert");
 
     // --- Products ---
     console.log("\n☕ Creating products...");
-    const prodEspresso = crypto.randomUUID();
-    const prodLatte = crypto.randomUUID();
-    const prodCappuccino = crypto.randomUUID();
-    const prodMacchiato = crypto.randomUUID();
-    const prodAmericano = crypto.randomUUID();
-    const prodMocha = crypto.randomUUID();
-    const prodMatcha = crypto.randomUUID();
-    const prodChocolate = crypto.randomUUID();
-    const prodCroissant = crypto.randomUUID();
-    const prodMuffin = crypto.randomUUID();
-    const prodCheesecake = crypto.randomUUID();
-    const prodTiramisu = crypto.randomUUID();
-
     const now = new Date();
     db.insert(schema.products)
         .values([
-            // Coffee
             {
-                id: prodEspresso,
+                id: "prod-1",
                 categoryId: catCoffee,
-                name: "Espresso",
-                price: 25000,
+                name: "Americano",
+                price: 18000,
                 sku: "COF-001",
-                imageUrl: "/uploads/cafe latte.jpeg",
-                description: "Rich single-shot espresso",
+                imageUrl: "/uploads/americano.jpeg",
+                description: "Espresso dengan air panas atau es",
                 isActive: true,
                 createdAt: now,
                 updatedAt: now,
             },
             {
-                id: prodLatte,
+                id: "prod-2",
                 categoryId: catCoffee,
-                name: "Caffe Latte",
-                price: 35000,
+                name: "Cafe Latte",
+                price: 20000,
                 sku: "COF-002",
                 imageUrl: "/uploads/cafe latte.jpeg",
-                description: "Smooth espresso with steamed milk",
+                description: "Espresso lembut dengan susu steamed",
                 isActive: true,
                 createdAt: now,
                 updatedAt: now,
             },
             {
-                id: prodCappuccino,
+                id: "prod-3",
                 categoryId: catCoffee,
                 name: "Cappuccino",
-                price: 35000,
+                price: 20000,
                 sku: "COF-003",
                 imageUrl: "/uploads/cappucino.jpeg",
-                description: "Frothy cappuccino in a ceramic cup",
+                description: "Espresso dengan foam susu tebal",
                 isActive: true,
                 createdAt: now,
                 updatedAt: now,
             },
             {
-                id: prodMacchiato,
-                categoryId: catCoffee,
-                name: "Caramel Macchiato",
-                price: 38000,
-                sku: "COF-004",
-                imageUrl: "/uploads/cafe latte.jpeg",
-                description: "Caramel macchiato with drizzle",
-                isActive: true,
-                createdAt: now,
-                updatedAt: now,
-            },
-            {
-                id: prodAmericano,
-                categoryId: catCoffee,
-                name: "Iced Americano",
-                price: 28000,
-                sku: "COF-005",
-                imageUrl: "/uploads/americano.jpeg",
-                description: "Classic iced americano with ice cubes",
-                isActive: true,
-                createdAt: now,
-                updatedAt: now,
-            },
-            {
-                id: prodMocha,
-                categoryId: catCoffee,
-                name: "Mocha Latte",
-                price: 36000,
-                sku: "COF-006",
-                imageUrl: "/uploads/cafe latte.jpeg",
-                description: "Espresso with chocolate and steamed milk",
-                isActive: true,
-                createdAt: now,
-                updatedAt: now,
-            },
-            // Non-Coffee
-            {
-                id: prodMatcha,
+                id: "prod-4",
                 categoryId: catNonCoffee,
                 name: "Matcha Latte",
-                price: 35000,
+                price: 20000,
                 sku: "NCF-001",
                 imageUrl: "/uploads/matcha.jpeg",
-                description: "Premium Japanese matcha with steamed milk",
+                description: "Matcha Jepang dengan susu segar",
                 isActive: true,
                 createdAt: now,
                 updatedAt: now,
             },
             {
-                id: prodChocolate,
+                id: "prod-5",
                 categoryId: catNonCoffee,
-                name: "Hot Chocolate",
-                price: 32000,
+                name: "Chocolate Milk",
+                price: 20000,
                 sku: "NCF-002",
                 imageUrl: "/uploads/chocolate milk.jpeg",
-                description: "Rich chocolate with whipped cream",
+                description: "Cokelat kaya rasa dengan susu hangat",
                 isActive: true,
                 createdAt: now,
                 updatedAt: now,
             },
             {
-                id: crypto.randomUUID(),
+                id: "prod-6",
                 categoryId: catNonCoffee,
                 name: "Iced Tea",
-                price: 18000,
+                price: 10000,
                 sku: "NCF-003",
                 imageUrl: "/uploads/iced tea.jpeg",
-                description: "Fresh brewed iced tea",
-                isActive: true,
-                createdAt: now,
-                updatedAt: now,
-            },
-            // Bakery / Food
-            {
-                id: prodCroissant,
-                categoryId: catBakery,
-                name: "Croissant",
-                price: 28000,
-                sku: "BAK-001",
-                imageUrl: "/uploads/croissant.jpeg",
-                description: "Flaky golden butter croissant",
+                description: "Teh manis dingin menyegarkan",
                 isActive: true,
                 createdAt: now,
                 updatedAt: now,
             },
             {
-                id: crypto.randomUUID(),
-                categoryId: catBakery,
-                name: "Nasi Goreng Spesial",
-                price: 40000,
+                id: "prod-7",
+                categoryId: catFood,
+                name: "Nasi Goreng",
+                price: 15000,
                 sku: "FOD-001",
                 imageUrl: "/uploads/nasi-goreng.jpeg",
-                description: "Nasi goreng khas cafe dengan telur dan ayam",
+                description: "Nasi goreng khas cafe dengan telur",
                 isActive: true,
                 createdAt: now,
                 updatedAt: now,
             },
-            // Dessert
             {
-                id: prodCheesecake,
+                id: "prod-8",
+                categoryId: catFood,
+                name: "Croissant",
+                price: 18000,
+                sku: "BAK-001",
+                imageUrl: "/uploads/croissant.jpeg",
+                description: "Roti croissant mentega yang renyah",
+                isActive: true,
+                createdAt: now,
+                updatedAt: now,
+            },
+            {
+                id: "prod-9",
                 categoryId: catDessert,
                 name: "Cheesecake",
-                price: 45000,
+                price: 22000,
                 sku: "DST-001",
                 imageUrl: "/uploads/cheescake.jpeg",
-                description: "Creamy New York style cheesecake",
+                description: "Kue keju lembut manis khas New York",
                 isActive: true,
                 createdAt: now,
                 updatedAt: now,
             },
+        ])
+        .run();
             {
                 id: prodTiramisu,
                 categoryId: catDessert,
