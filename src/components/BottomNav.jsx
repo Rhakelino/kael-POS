@@ -1,16 +1,17 @@
 import { NavLink } from "react-router-dom";
-import { MonitorStop, ShoppingBag, Settings } from "lucide-react";
+import { MonitorStop, ShoppingBag, BarChart3, Settings } from "lucide-react";
 
 const tabs = [
     { name: "Kasir", path: "/cashier", icon: MonitorStop },
     { name: "Pesanan", path: "/orders", icon: ShoppingBag },
+    { name: "Laporan", path: "/reports", icon: BarChart3 },
     { name: "Pengaturan", path: "/settings", icon: Settings },
 ];
 
 export default function BottomNav() {
     return (
         <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-xl border-t border-border">
-            <div className="flex items-stretch h-16 max-w-md mx-auto px-6">
+            <div className="flex items-stretch h-16 max-w-md mx-auto px-3">
                 {tabs.map((tab) => {
                     const Icon = tab.icon;
                     return (

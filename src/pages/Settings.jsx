@@ -161,7 +161,7 @@ export default function Settings() {
                     </div>
                 )}
                 {tab === "report" && (
-                    <div className="p-10 text-center text-muted-foreground text-sm font-medium">Laporan akan segera hadir</div>
+                    <div className="p-10 text-center text-muted-foreground text-sm font-medium">Laporan pindah ke halaman terpisah — tekan tab <b>Laporan</b> di bawah.</div>
                 )}
             </div>
 
