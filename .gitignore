@@ -51,3 +51,7 @@ next-env.d.ts
 .wrangler
 .dev.vars*
 !.dev.vars.example
+
+# local dev logs & test artifacts
+dev.log
+.playwright-mcp
