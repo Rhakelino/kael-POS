@@ -119,13 +119,13 @@ export default function Settings() {
             <div className="px-4 py-4 space-y-4">
                 {tab === "store" && (
                     <>
-                        <div className="flex items-center justify-between p-4 bg-card rounded-2xl border">
-                            <div className="flex items-center gap-3">
-                                <User className="size-8 p-1.5 rounded-full bg-primary/10 text-primary" />
-                                <div><p className="font-bold text-sm">{user?.name}</p><p className="text-xs text-muted-foreground uppercase">{user?.role}</p></div>
+                            <div className="flex items-center justify-between p-4 bg-card rounded-2xl border">
+                                <div className="flex items-center gap-3">
+                                    <User className="size-8 p-1.5 rounded-full bg-primary/10 text-primary" />
+                                    <div><p className="font-bold text-sm">{user?.name || "Admin"}</p><p className="text-xs text-muted-foreground uppercase">{user?.role || "ADMIN"}</p></div>
+                                </div>
+                                <Button variant="ghost" size="icon" onClick={handleLogout} className="text-destructive w-8 h-8"><LogOut className="size-5" /></Button>
                             </div>
-                            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-destructive"><LogOut className="size-4" /></Button>
-                        </div>
                         <div className="bg-card rounded-2xl border overflow-hidden divide-y">
                             <div className="p-4 flex justify-between items-center"><span className="font-bold text-sm flex gap-3"><Moon className="size-4 text-primary"/>Mode Gelap</span><Switch checked={theme === 'dark'} onCheckedChange={c => saveSettings({theme: c ? 'dark' : 'light'})} /></div>
                             <div className="p-4 flex justify-between items-center"><span className="font-bold text-sm flex gap-3"><Printer className="size-4 text-primary"/>Auto Print</span><Switch checked={autoPrint} onCheckedChange={c => saveSettings({autoPrint: c})} /></div>

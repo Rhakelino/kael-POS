@@ -167,7 +167,7 @@ export default function Cashier() {
             const payload = { 
                 items: cart.map(item => ({ id: item.id, name: item.name, price: item.price, quantity: item.quantity })),
                 paymentMethod, 
-                cashierId: user?.id || "1", // Fallback to "1" (Admin) if auth state is lost
+                cashierId: user?.id || null,
                 amountPaid: isCash ? parsedAmountPaid : null 
             };
             const res = await fetch("/api/orders", {

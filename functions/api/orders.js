@@ -1,5 +1,5 @@
 import { getDb } from "../db.js";
-import { orders, orderItems } from "../db_schema/schema.js";
+import { orders, orderItems, users } from "../db_schema/schema.js";
 import { eq, desc } from "drizzle-orm";
 
 function generateOrderNumber() {
@@ -34,6 +34,14 @@ export async function onRequestPost(context) {
         
         const changeAmount = body.amountPaid ? body.amountPaid - subtotal : null;
         
+        let cashierId = body.cashierId || null;
+        if (cashierId) {
+            const cashierExists = await db.query.users.findFirst({
+                where: eq(users.id, cashierId)
+            });
+            if (!cashierExists) cashierId = null;
+        }
+
         await db.insert(orders).values({
             id: orderId,
             orderNumber,
@@ -45,7 +53,7 @@ export async function onRequestPost(context) {
             amountPaid: body.amountPaid || null,
             changeAmount,
             status: "new",
-            cashierId: body.cashierId || null,
+            cashierId,
             notes: null,
             createdAt: now,
             updatedAt: now
