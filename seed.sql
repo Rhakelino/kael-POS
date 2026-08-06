@@ -1,14 +1,9 @@
-INSERT INTO products (id, category_id, name, price, image_url, created_at, updated_at) VALUES 
-('4', '2', 'Caramel Macchiato', 38000, '/uploads/1772040475110-8de5b7ba.jpeg', 1672531200000, 1672531200000),
-('5', '2', 'Espresso', 25000, '/uploads/1772040483555-07949a36.jpeg', 1672531200000, 1672531200000),
-('6', '2', 'Americano', 28000, '/uploads/1772040561217-65b59788.jpeg', 1672531200000, 1672531200000),
-('7', '2', 'Cappuccino', 33000, '/uploads/1772040610268-dc036185.jpeg', 1672531200000, 1672531200000),
-('8', '1', 'Mie Goreng Spesial', 40000, '/uploads/1772040720649-b37dc637.jpeg', 1672531200000, 1672531200000),
-('9', '1', 'French Fries', 25000, '/uploads/1772040821201-3433e296.jpeg', 1672531200000, 1672531200000),
-('10', '1', 'Chicken Wings', 45000, '/uploads/1772040878362-67296f96.jpeg', 1672531200000, 1672531200000),
-('11', '1', 'Croissant', 28000, '/uploads/1772040892590-006f1fae.jpeg', 1672531200000, 1672531200000),
-('12', '1', 'Brownie', 22000, '/uploads/1772040977745-417f921f.jpeg', 1672531200000, 1672531200000),
-('13', '2', 'Mocha Latte', 36000, '/uploads/1772040982283-bf2a3089.jpeg', 1672531200000, 1672531200000),
-('14', '2', 'Vanilla Latte', 35000, '/uploads/1772040992931-66433c32.jpeg', 1672531200000, 1672531200000),
-('15', '1', 'Nasi Ayam Geprek', 38000, '/uploads/1772041062583-3f209331.jpeg', 1672531200000, 1672531200000),
-('16', '1', 'Beef Burger', 55000, '/uploads/1772041249484-e4577aa8.jpeg', 1672531200000, 1672531200000);
+UPDATE products SET image_url = '/uploads/americano.jpeg' WHERE name LIKE '%Americano%';
+UPDATE products SET image_url = '/uploads/cafe latte.jpeg' WHERE name LIKE '%Latte%' OR name LIKE '%Espresso%' OR name LIKE '%Mocha%';
+UPDATE products SET image_url = '/uploads/cappucino.jpeg' WHERE name LIKE '%Cappuccino%';
+UPDATE products SET image_url = '/uploads/matcha.jpeg' WHERE name LIKE '%Matcha%';
+UPDATE products SET image_url = '/uploads/chocolate milk.jpeg' WHERE name LIKE '%Chocolate%';
+UPDATE products SET image_url = '/uploads/croissant.jpeg' WHERE name LIKE '%Croissant%';
+UPDATE products SET image_url = '/uploads/nasi-goreng.jpeg' WHERE name LIKE '%Nasi%';
+UPDATE products SET image_url = '/uploads/cheescake.jpeg' WHERE name LIKE '%Cheesecake%';
+UPDATE products SET image_url = '/uploads/iced tea.jpeg' WHERE name LIKE '%Tea%';

@@ -206,7 +206,10 @@ export default function Cashier() {
                                 const inCart = cart.find(i => i.id === product.id);
                                 return (
                                     <button key={product.id} onClick={() => addToCart(product)} disabled={!product.isActive} className={`text-left bg-card p-2.5 rounded-2xl border ${!product.isActive ? "opacity-40 grayscale" : inCart ? "border-primary ring-1 ring-primary/20" : "border-border/60 hover:shadow-sm"}`}>
-                                        <div className="aspect-[4/3] rounded-xl mb-2 bg-center bg-cover bg-muted relative" style={{ backgroundImage: product.imageUrl ? `url('${product.imageUrl}')` : undefined }}>
+                                        <div className="aspect-[4/3] rounded-xl mb-2 bg-center bg-cover bg-muted relative overflow-hidden">
+                                            {product.imageUrl ? (
+                                                <img src={encodeURI(product.imageUrl)} alt={product.name} className="w-full h-full object-cover" />
+                                            ) : null}
                                             {inCart && <div className="absolute top-1.5 right-1.5 size-6 rounded-full bg-primary text-white flex items-center justify-center text-[11px] font-black">{inCart.quantity}</div>}
                                         </div>
                                         <h3 className="font-bold text-[13px] line-clamp-1">{product.name}</h3>
