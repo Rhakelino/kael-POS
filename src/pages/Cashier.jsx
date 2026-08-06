@@ -228,7 +228,51 @@ export default function Cashier() {
                 </Sheet>
             )}
             <Dialog open={!!showReceipt} onOpenChange={(o) => { if (!o) setShowReceipt(null); }}>
-                <DialogContent className="sm:max-w-sm p-6 text-center"><h3 className="font-black text-xl mb-4">Berhasil!</h3><p>#{showReceipt?.orderNumber}</p><Button onClick={() => setShowReceipt(null)} className="w-full mt-6">Tutup</Button></DialogContent>
+                <DialogContent className="sm:max-w-sm p-6 text-center">
+                    <div id="receipt-print-area" className="p-4 bg-white text-black font-mono text-xs rounded-lg text-left space-y-3">
+                        <div className="text-center border-b pb-3">
+                            <h2 className="font-bold text-base uppercase">{storeName}</h2>
+                            <p className="text-[10px] text-gray-500">Struk Pembayaran</p>
+                        </div>
+                        <div className="flex justify-between text-[10px] text-gray-600">
+                            <span>No: #{showReceipt?.orderNumber}</span>
+                            <span>{showReceipt?.date ? new Date(showReceipt.date).toLocaleString("id-ID") : ""}</span>
+                        </div>
+                        <div className="border-b border-t py-2 space-y-1">
+                            {showReceipt?.items?.map((item, idx) => (
+                                <div key={idx} className="flex justify-between">
+                                    <span>{item.quantity}x {item.name}</span>
+                                    <span>{formatRupiah(item.price * item.quantity)}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="space-y-1 text-right">
+                            <div className="flex justify-between font-bold">
+                                <span>Total</span>
+                                <span>{formatRupiah(showReceipt?.total || 0)}</span>
+                            </div>
+                            <div className="flex justify-between text-gray-600">
+                                <span className="capitalize">Bayar ({showReceipt?.paymentMethod})</span>
+                                <span>{formatRupiah(showReceipt?.amountPaid || showReceipt?.total || 0)}</span>
+                            </div>
+                            {showReceipt?.paymentMethod === "cash" && (
+                                <div className="flex justify-between text-gray-600">
+                                    <span>Kembali</span>
+                                    <span>{formatRupiah(showReceipt?.changeAmount || 0)}</span>
+                                </div>
+                            )}
+                        </div>
+                        <div className="text-center border-t pt-3 text-[10px] text-gray-500">
+                            <p>{receiptFooter || "Terima Kasih atas Kunjungan Anda!"}</p>
+                        </div>
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                        <Button onClick={() => window.print()} className="flex-1 font-bold flex gap-2 items-center justify-center">
+                            <Printer className="size-4" /> Cetak Struk
+                        </Button>
+                        <Button variant="outline" onClick={() => setShowReceipt(null)} className="flex-1">Tutup</Button>
+                    </div>
+                </DialogContent>
             </Dialog>
         </div>
     );

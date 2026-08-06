@@ -71,12 +71,65 @@ export default function Orders() {
                             </div>
                             <div className="flex justify-between items-center pt-3 border-t">
                                 <span className="font-black text-lg">{formatRupiah(o.total)}</span>
-                                {c.action && <Button size="sm" onClick={() => updateStatus(o.id, c.next)} disabled={updating === o.id}>{updating === o.id ? "..." : c.action}</Button>}
+                                <div className="flex gap-2">
+                                    <Button variant="outline" size="sm" onClick={() => setReceipt(o)}>
+                                        <Receipt className="size-4 mr-1" /> Struk
+                                    </Button>
+                                    {c.action && <Button size="sm" onClick={() => updateStatus(o.id, c.next)} disabled={updating === o.id}>{updating === o.id ? "..." : c.action}</Button>}
+                                </div>
                             </div>
                         </div>
                     );
                 })}
             </div>
+
+            <Dialog open={!!receipt} onOpenChange={(o) => { if (!o) setReceipt(null); }}>
+                <DialogContent className="sm:max-w-sm p-6 text-center">
+                    <div id="receipt-print-area" className="p-4 bg-white text-black font-mono text-xs rounded-lg text-left space-y-3">
+                        <div className="text-center border-b pb-3">
+                            <h2 className="font-bold text-base uppercase">Kael Cafe</h2>
+                            <p className="text-[10px] text-gray-500">Struk Pembayaran</p>
+                        </div>
+                        <div className="flex justify-between text-[10px] text-gray-600">
+                            <span>No: #{receipt?.orderNumber}</span>
+                            <span>{receipt?.createdAt ? new Date(receipt.createdAt).toLocaleString("id-ID") : ""}</span>
+                        </div>
+                        <div className="border-b border-t py-2 space-y-1">
+                            {receipt?.items?.map((item, idx) => (
+                                <div key={idx} className="flex justify-between">
+                                    <span>{item.quantity}x {item.productName}</span>
+                                    <span>{formatRupiah(item.subtotal)}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="space-y-1 text-right">
+                            <div className="flex justify-between font-bold">
+                                <span>Total</span>
+                                <span>{formatRupiah(receipt?.total || 0)}</span>
+                            </div>
+                            <div className="flex justify-between text-gray-600">
+                                <span className="capitalize">Bayar ({receipt?.paymentMethod || "cash"})</span>
+                                <span>{formatRupiah(receipt?.amountPaid || receipt?.total || 0)}</span>
+                            </div>
+                            {receipt?.paymentMethod === "cash" && (
+                                <div className="flex justify-between text-gray-600">
+                                    <span>Kembali</span>
+                                    <span>{formatRupiah(receipt?.changeAmount || 0)}</span>
+                                </div>
+                            )}
+                        </div>
+                        <div className="text-center border-t pt-3 text-[10px] text-gray-500">
+                            <p>Terima Kasih atas Kunjungan Anda!</p>
+                        </div>
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                        <Button onClick={() => window.print()} className="flex-1 font-bold flex gap-2 items-center justify-center">
+                            <Receipt className="size-4" /> Cetak Struk
+                        </Button>
+                        <Button variant="outline" onClick={() => setReceipt(null)} className="flex-1">Tutup</Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
