@@ -115,7 +115,7 @@ export default function Reports() {
     const summary = data?.summary;
 
     return (
-        <div className="flex flex-col min-h-full pb-4">
+        <div className="flex flex-col min-h-full pb-40">
             <div className="px-4 pt-4 pb-2 bg-background sticky top-0 z-10 space-y-3">
                 <div className="flex justify-between items-center">
                     <h1 className="text-lg font-black">Laporan</h1>
