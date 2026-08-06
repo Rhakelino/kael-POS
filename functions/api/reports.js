@@ -1,6 +1,6 @@
 import { getDb } from "../db.js";
-import { orders, orderItems } from "../db_schema/schema.js";
-import { and, gte, lt, desc, sql } from "drizzle-orm";
+import { orders } from "../db_schema/schema.js";
+import { and, gte, lt, desc } from "drizzle-orm";
 
 export async function onRequestGet(context) {
     try {
@@ -10,8 +10,8 @@ export async function onRequestGet(context) {
         const from = url.searchParams.get("from");
         const to = url.searchParams.get("to");
 
-        const fromMs = from ? new Date(from + "T00:00:00").getTime() : 0;
-        const toMs = to ? new Date(to + "T23:59:59.999").getTime() : Date.now();
+        const fromMs = from ? new Date(from + "T00:00:00+07:00").getTime() : 0;
+        const toMs = to ? new Date(to + "T23:59:59.999+07:00").getTime() : Date.now();
 
         const conditions = [];
         if (from) conditions.push(gte(orders.createdAt, new Date(fromMs)));
@@ -51,15 +51,17 @@ export async function onRequestGet(context) {
 
         return Response.json({
             success: true,
-            summary: {
-                totalOrders: orderList.length,
-                totalSales,
-                totalItems,
-                averageOrder: orderList.length ? Math.round(totalSales / orderList.length) : 0,
-                paymentBreakdown
-            },
-            topProducts,
-            orders: orderList
+            data: {
+                summary: {
+                    totalOrders: orderList.length,
+                    totalSales,
+                    totalItems,
+                    averageOrder: orderList.length ? Math.round(totalSales / orderList.length) : 0,
+                    paymentBreakdown
+                },
+                topProducts,
+                orders: orderList
+            }
         });
     } catch (e) {
         return Response.json({ success: false, error: e.message }, { status: 500 });
